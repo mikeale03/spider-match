@@ -2,8 +2,8 @@
   "devToolsPort": 19002,
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 47728,
-  "expoServerNgrokUrl": "https://ef-w8k.anonymous.navigationtest.exp.direct",
-  "packagerNgrokUrl": "https://packager.ef-w8k.anonymous.navigationtest.exp.direct",
-  "ngrokPid": 8172
+  "packagerPid": 46804,
+  "expoServerNgrokUrl": "https://ef-w8k.anonymous.spider-match.exp.direct",
+  "packagerNgrokUrl": "https://packager.ef-w8k.anonymous.spider-match.exp.direct",
+  "ngrokPid": 40660
 }

@@ -5,24 +5,32 @@ import Spiders from '../components/set-participant/SetSpiders';
 import ErrorBoundary from  '../components/error-catch/ErrorBoundary';
 
 export default function SetParticipant({route, navigation}) {
-
-    const init = route.params?.participant ? 
-        route.params?.participant :
+    
+    const participant = route.params?.participant ? 
+        route.params.participant :
         {
             key:Date.now().toString(),
             name:'Gwapo',
             spiders: []
         } 
-    const [participant, setParticipant] = useState(init);
-    
-    //useEffect(() => {
-        
-        console.log(participant);
-        //setParticipant(participant);
-    //});
+    const [name, setName] = useState(participant.name);
+    const [spiders, setSpiders] = useState(participant.spiders);
+
+    useEffect(() => {
+        setName(participant.name);
+        setSpiders(participant.spiders);
+        console.log(name);
+      }, [route.params]); 
 
     const setParticipantName = (val) => {
-        setParticipant({...participant,name:val});
+        setParticipant({...participant, name:val});
+    }
+
+    const onEditSpider = (spider) => {
+        const newSpiders = spiders.map((item) => 
+            item.key === spider.key ? spider : item 
+        );
+        setSpiders(newSpiders);
     }
     
     return (
@@ -38,13 +46,11 @@ export default function SetParticipant({route, navigation}) {
                     <View style={styles.inputWrapper}>
                         <TextInput
                             style={styles.input}
-                            value = {participant.name}
-                            onChangeText={setParticipantName}
+                            value = {name}
+                            onChangeText={setName}
                             />
                     </View>
-                    <Spiders participant={participant} 
-                        setParticipant={setParticipant}
-                    />
+                    <Spiders spiders={spiders} onEdit={onEditSpider} />
                 </View>
             </ErrorBoundary>
         </View>

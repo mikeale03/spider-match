@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Text, Switch , TouchableNativeFeedback} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function SetSpiders({participant , setParticipant}) {
+export default function SetSpiders({spiders , onEdit}) {
     
-    const spiders = participant.spiders;
+    //const spiders = participant.spiders;
     const onAddHandler = () => {
         let spider = {
             key: Date.now().toString(),
@@ -23,13 +23,16 @@ export default function SetSpiders({participant , setParticipant}) {
     }
 
     const setSpiderWeightHandler = (val, index) => {
-        let newSpiders = [...spiders];
-        newSpiders[index].weight = Number(val);
+        val = Number(val);
+        const spider = {...spiders[index], weight:val}
+        // let newSpiders = spiders.map()
+        // newSpiders[index].weight = Number(val);
        
-        setParticipant({
-            ...participant, 
-            spiders:newSpiders
-        });
+        // setParticipant({
+        //     ...participant, 
+        //     spiders:newSpiders
+        // });
+        onEdit(spider);
     }
 
     const onDeleteHandler = () => {
@@ -41,7 +44,7 @@ export default function SetSpiders({participant , setParticipant}) {
             <View style={styles.title}>
                 <Text style={styles.titleText}>Spiders</Text>
             </View>
-            { spiders.map((item, index) => (
+            { spiders && spiders.map((item, index) => (
                 <View key={item.key} style={styles.listContainer}>
                     <View style={styles.imageContainer}>
                         <View style={styles.imageWrapper}>
@@ -51,7 +54,7 @@ export default function SetSpiders({participant , setParticipant}) {
                     <View style={styles.listInputContainer}>
                         <View style={styles.listInputWrapper}>
                             <TextInput placeholder='Enter weight' style={styles.input} 
-                                value={item.weight && item.weight.toString()}
+                                value={item.weight ? item.weight.toString() : null}
                                 keyboardType='numeric'
                                 onChangeText={(val) => setSpiderWeightHandler(val, index)}
                                 autoFocus={true}
