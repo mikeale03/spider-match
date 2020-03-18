@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, KeyboardAvoidingView } from 'react-native';
+import { View, TextInput, StyleSheet, ScrollView, KeyboardAvoidingView } from 'react-native';
 import Header from '../components/custom/Header';
 import Spiders from '../components/set-participant/SetSpiders';
 import ErrorBoundary from  '../components/error-catch/ErrorBoundary';
@@ -32,27 +32,45 @@ export default function SetParticipant({route, navigation}) {
         );
         setSpiders(newSpiders);
     }
+
+    const onAddSpider = (spider) => {
+        setSpiders([...spiders,spider]);
+    }
+
+    const onDeleteSpider = (spider) => {
+        setSpiders(spiders.filter((item) => 
+            item.key !== spider.key 
+        ));
+    }
     
     return (
         <View style={styles.container}>
-            <Header title="Set Participant" editMode="true"/>
+            
             <ErrorBoundary>
-                <View style={styles.innerContainer}>
-                    <View style={styles.profilePicContainer}>
-                        <View style={styles.picWrapper}>
+                <KeyboardAvoidingView behavior="padding" enabled>
+                <ScrollView keyboardShouldPersistTaps='always'>
+                    <View style={styles.innerContainer}>
+                        <View style={styles.profilePicContainer}>
+                            <View style={styles.picWrapper}>
 
+                            </View>
                         </View>
+                        <View style={styles.inputWrapper}>
+                            <TextInput
+                                style={styles.input}
+                                value = {name}
+                                onChangeText={setName}
+                                />
+                        </View>
+                        <Spiders spiders={spiders} 
+                            onEdit={onEditSpider} 
+                            onAdd={onAddSpider} 
+                            onDelete={onDeleteSpider} />
                     </View>
-                    <View style={styles.inputWrapper}>
-                        <TextInput
-                            style={styles.input}
-                            value = {name}
-                            onChangeText={setName}
-                            />
-                    </View>
-                    <Spiders spiders={spiders} onEdit={onEditSpider} />
-                </View>
+                </ScrollView>
+                </KeyboardAvoidingView>
             </ErrorBoundary>
+            <Header title="Set Participant" editMode="true"/>
         </View>
     );
 }
