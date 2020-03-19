@@ -19,7 +19,7 @@ export default function SetParticipant({route, navigation}) {
         setName(participant.name);
         setSpiders(participant.spiders);
         console.log(name);
-      }, [route.params]); 
+    }, [route.params]); 
 
     const onEditSpider = (spider) => {
         const newSpiders = spiders.map((item) => 
