@@ -4,13 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
     
-    //const spiders = participant.spiders;
     const addSpiderHandler = () => {
         const len = spiders.length;
         let spider = {
             key: Date.now().toString(),
             image:'',
-            weight:null,
+            weight:'',
             otherDetails:'',
             isJoker:false,
             status:'No Match',
@@ -24,6 +23,11 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
     const setWeightHandler = (val, index) => {
         val = Number(val);
         const spider = {...spiders[index], weight:val}
+        onEdit(spider);
+    }
+
+    const setOtherDetailsHandler = (val, index) => {
+        const spider = {...spiders[index], otherDetails:val}
         onEdit(spider);
     }
 
@@ -56,7 +60,7 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
                         </View>
                         <View style={styles.listInputWrapper}>
                             <TextInput placeholder='Other details..' style={styles.input} value={item.otherDetails} 
-                                //onChangeText={setOtherDetails}
+                                onChangeText={(val) => setOtherDetailsHandler(val, index)}
                                 />
                         </View>
                     </View>

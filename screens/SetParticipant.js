@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { useDispatch } from "react-redux";
+import { addParticipant, updateParticipant } from '../redux/actions';
 import Header from '../components/custom/Header';
 import Spiders from '../components/set-participant/SetSpiders';
 import ErrorBoundary from  '../components/error-catch/ErrorBoundary';
 
 export default function SetParticipant({route, navigation}) {
+    const dispatch = useDispatch();
     
     const participant = route.params?.participant ? 
-        route.params.participant :
-        {
-            key:Date.now().toString(),
-            name:'Gwapo',
-            spiders: []
-        } 
+        route.params.participant : { name:'', spiders: [] }
+
     const [name, setName] = useState(participant.name);
     const [spiders, setSpiders] = useState(participant.spiders);
 
@@ -21,10 +20,6 @@ export default function SetParticipant({route, navigation}) {
         setSpiders(participant.spiders);
         console.log(name);
       }, [route.params]); 
-
-    const setParticipantName = (val) => {
-        setParticipant({...participant, name:val});
-    }
 
     const onEditSpider = (spider) => {
         const newSpiders = spiders.map((item) => 
@@ -41,6 +36,26 @@ export default function SetParticipant({route, navigation}) {
         setSpiders(spiders.filter((item) => 
             item.key !== spider.key 
         ));
+    }
+
+    const setParticipant = () => {
+    //if participant has key dispatch update else add
+        if(participant.key) {
+            dispatch(updateParticipant({
+                ...participant, name, spiders
+            }));
+        }
+        else {
+            const key = Date.now().toString();
+            dispatch(addParticipant({
+                ...participant, key, name, spiders
+            }));
+        }
+        navigation.goBack();
+    }
+
+    const onCloseHandler= () => {
+        navigation.goBack();
     }
     
     return (
@@ -60,6 +75,7 @@ export default function SetParticipant({route, navigation}) {
                                 style={styles.input}
                                 value = {name}
                                 onChangeText={setName}
+                                autoFocus={true}
                                 />
                         </View>
                         <Spiders spiders={spiders} 
@@ -70,7 +86,8 @@ export default function SetParticipant({route, navigation}) {
                 </ScrollView>
                 </KeyboardAvoidingView>
             </ErrorBoundary>
-            <Header title="Set Participant" editMode="true"/>
+            <Header title="Set Participant" editMode="true"
+                onDone={setParticipant} onClose={onCloseHandler}/>
         </View>
     );
 }
