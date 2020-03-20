@@ -7,9 +7,13 @@ const Tab = createBottomTabNavigator();
 
 export default function TabScreen() {
     return (
-        <Tab.Navigator tabBarOptions={{keyboardHidesTabBar:true}} >
+        <Tab.Navigator tabBarOptions={options} >
             <Tab.Screen name="Participants" component={Participants} />
             <Tab.Screen name="Matches" component={Matches} />
         </Tab.Navigator>
     );
 }
+
+const options = {
+    keyboardHidesTabBar:true,
+  }

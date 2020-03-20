@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     },
     innerContainer: {
         flex:1,
-        paddingHorizontal:45
+        paddingHorizontal:15
     },
     profilePicContainer: {
         marginTop:84,
@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
         borderColor:'gray',
         borderWidth:1,
         flex:1,
-        borderRadius:10
+        borderRadius:10,
+        paddingHorizontal:10
     },
 });

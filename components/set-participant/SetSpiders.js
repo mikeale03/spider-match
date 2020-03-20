@@ -101,23 +101,22 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         justifyContent:'center',
-        alignItems:'center',
+        flex: 2
     },
     imageWrapper: {
-        height:65,
-        width:65,
+        height:70,
+        width:70,
         borderRadius:10,
         backgroundColor:'gray'
     },
     listContainer: {
         flexDirection:'row',
         marginBottom: 10,
-        alignItems:'center',
+        flex: 1,
     },
     listInputContainer: {
-        flex:1,
-        justifyContent:'space-between',
-        paddingHorizontal:5,
+        flex:5,
+        paddingHorizontal:10,
     },
     listInputWrapper: {
         flexDirection:'row',
@@ -135,6 +134,8 @@ const styles = StyleSheet.create({
     switchContainer: {
         alignItems:'center',
         justifyContent:'center',
+        textAlign:'center',
+        flex: 1
     },
     input: {
         height: 30,
@@ -143,11 +144,11 @@ const styles = StyleSheet.create({
         flex:1,
         borderRadius:10,
         paddingHorizontal:10,
+        marginBottom: 5
     },
     remove: {
-        position: 'absolute',
-        right: -30,
+        flex: 1,
         justifyContent:'center',
-        alignItems:'center',
+        alignItems:'flex-end',
     },
 });

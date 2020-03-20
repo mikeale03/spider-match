@@ -35,7 +35,8 @@ export default function App() {
           <Stack.Screen name='SetParticipant' component={SetParticipant} 
             options={{
               headerShown: false,
-            }}/>
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
