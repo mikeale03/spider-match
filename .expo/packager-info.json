@@ -1,1 +1,9 @@
-{}
+{
+  "devToolsPort": 19002,
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 4452,
+  "expoServerNgrokUrl": "https://wu-cau.anonymous.spider-match.exp.direct",
+  "packagerNgrokUrl": "https://packager.wu-cau.anonymous.spider-match.exp.direct",
+  "ngrokPid": 13084
+}

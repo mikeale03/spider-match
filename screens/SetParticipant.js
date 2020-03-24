@@ -10,7 +10,7 @@ export default function SetParticipant({route, navigation}) {
     const dispatch = useDispatch();
     
     const participant = route.params?.participant ? 
-        route.params.participant : { name:'', spiders: [] }
+        route.params.participant : { key:Date.now().toString(), name:'', spiders: [] }
 
     const [name, setName] = useState(participant.name);
     const [spiders, setSpiders] = useState(participant.spiders);
@@ -29,6 +29,7 @@ export default function SetParticipant({route, navigation}) {
     }
 
     const onAddSpider = (spider) => {
+        spider.parentKey = participant.key;
         setSpiders([...spiders,spider]);
     }
 
@@ -39,8 +40,8 @@ export default function SetParticipant({route, navigation}) {
     }
 
     const setParticipant = () => {
-    //if participant has key dispatch update else add
-        if(participant.key) {
+    
+        if(route.params) {
             dispatch(updateParticipant({
                 ...participant, name, spiders
             }));

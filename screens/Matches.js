@@ -1,9 +1,13 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Picker} from 'react-native';
-import Header from "../components/custom/Header";
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Picker, Button} from 'react-native';
+import Header from '../components/custom/Header';
+import CreateMatch from '../components/matches/CreateMatch';
 import ErrorBoundary from '../components/error-catch/ErrorBoundary'
+
 function Matches({route, navigation}) {
     
+  const [isCreate, setIsCreate] = useState(false);
+
   useEffect(() => {
     navigation.setOptions({
       headerShown: false
@@ -26,6 +30,22 @@ function Matches({route, navigation}) {
                   <Picker.Item label="Cancelled" value="name" />
               </Picker>
             </View>
+            <View style={styles.matchButtonContainer}>
+              <View >
+                <Button title="Create match"
+                  onPress={() => {setIsCreate(!isCreate)}}
+                />
+              </View>
+              <View>
+                <Button title="Auto match"/>
+              </View>
+              <View>
+                <Button title="Auto match all"/>
+              </View>
+            </View>
+
+            { isCreate && <CreateMatch /> }
+
             <View style={styles.matchContainer}>
               <View style={styles.spiderContainer}>
                   <View>
@@ -73,6 +93,12 @@ const styles = StyleSheet.create({
   },
   matchContainer: {
     flexDirection:'row',
+  },
+  matchButtonContainer: {
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'space-between',
+    marginBottom:20,
   },
   spiderContainer: {
     flex:5,
