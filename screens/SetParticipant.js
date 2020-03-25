@@ -40,16 +40,16 @@ export default function SetParticipant({route, navigation}) {
     }
 
     const setParticipant = () => {
-    
+        const newSpiders = [...spiders].sort((a,b) => a.weight - b.weight );
         if(route.params) {
             dispatch(updateParticipant({
-                ...participant, name, spiders
+                ...participant, name, spiders:newSpiders
             }));
         }
         else {
             const key = Date.now().toString();
             dispatch(addParticipant({
-                ...participant, key, name, spiders
+                ...participant, key, name, spiders:newSpiders
             }));
         }
         navigation.goBack();

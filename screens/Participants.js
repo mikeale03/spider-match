@@ -1,22 +1,19 @@
 import React from 'react';
 import { Button, StyleSheet, View, Text, Picker, TouchableNativeFeedback } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import List from '../components/participants/ParticipantsList';
 import Header from '../components/custom/Header';
-import { useSelector, useDispatch } from 'react-redux';
-import { addParticipant } from '../redux/actions';
+import { useSelector } from 'react-redux';
 
 function Participants({navigation}) {
 
-    const participants = useSelector( (state) => state );
-    const dispatch = useDispatch();
+    const participants = useSelector( (state) => state.participants );
     const addHandler = () => {
       navigation.navigate('SetParticipant');
     }
 
     return (
         <View style={styles.container}>
-          <Header title="Participant" hideArrowBack={true}/>
+          <Header title="Participant" hideArrowBack={true} />
           <View style={styles.innerContainer}>
             <View style={{flexDirection:'row', paddingVertical:20, alignItems:'center', justifyContent:'space-between'}}> 
               <View style={{flexDirection:'row', alignItems:'center'}}>
@@ -31,7 +28,7 @@ function Participants({navigation}) {
                   </Picker>
                 </View>
               </View>
-              <TouchableNativeFeedback 
+              <TouchableNativeFeedback
                 onPress={addHandler}
                 background={TouchableNativeFeedback.SelectableBackground()}>
                 <View style={{backgroundColor: '#333332', padding:10, borderRadius:5}}>
@@ -40,11 +37,11 @@ function Participants({navigation}) {
               </TouchableNativeFeedback>
             </View>
 
-            <View style={{flexDirection:'row', alignItems:'center', paddingVertical:15, marginTop:5}}> 
-              <View style={{flex:4, alignItems:'center'}}>          
+            <View style={{flexDirection:'row', alignItems:'center', paddingVertical:15, marginTop:5}}>
+              <View style={{flex:4, alignItems:'center'}}>
                 <Text>Participant</Text>
               </View>
-              <View style={{flex:2, alignItems:'center'}}>    
+              <View style={{flex:2, alignItems:'center'}}>
                 <Text>Score</Text>
               </View>
             </View>
@@ -53,8 +50,6 @@ function Participants({navigation}) {
         </View>
     );
 }
-
-
 
 export default Participants;
 
