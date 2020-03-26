@@ -7,9 +7,9 @@ import SetParticipant from './screens/SetParticipant';
 import Matches from './screens/Matches';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { participantsReducer } from './redux/reducers';
+import rootReducer from './redux/reducers';
 
-const store = createStore(participantsReducer);
+const store = createStore(rootReducer);
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
