@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Text, Switch , TouchableNativeFeedback} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import SMTextInput from '../custom/SMTextInput';
+import { margins } from '../../utils/stylesheets/spacing';
+import SMImage from '../custom/SMImage';
 
 export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
     
@@ -43,14 +46,13 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
             { spiders && spiders.map((item, index) => (
                 <View key={item.key} style={styles.listContainer}>
                     <View style={styles.imageContainer}>
-                        <View style={styles.imageWrapper}>
-
-                        </View>
+                        <SMImage shape='square' size={70} />
                     </View>
                     <View style={styles.listInputContainer}>
-                        <View style={styles.listInputWrapper}>
-                            <TextInput placeholder='Enter weight' 
-                                style={styles.input} 
+                        <View style={[styles.listInputWrapper, margins.mb1]}>
+                            <SMTextInput
+                                size='sm'
+                                placeholder='Enter weight' 
                                 value={item.weight ? item.weight.toString() : null}
                                 keyboardType='numeric'
                                 onChangeText={(val) => setWeightHandler(val, index)}
@@ -59,9 +61,12 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
                             />
                         </View>
                         <View style={styles.listInputWrapper}>
-                            <TextInput placeholder='Other details..' style={styles.input} value={item.otherDetails} 
+                            <SMTextInput
+                                size={'sm'}
+                                placeholder='Other details..' 
+                                value={item.otherDetails} 
                                 onChangeText={(val) => setOtherDetailsHandler(val, index)}
-                                />
+                            />  
                         </View>
                     </View>
                     <View style={styles.switchContainer}>
@@ -82,22 +87,12 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
                 </View>
             </TouchableNativeFeedback>
         </View>
-    );
+    ); 
 };
 
 const styles = StyleSheet.create({
     container: {
 
-    },
-    input: {
-        height: 40,
-        // borderColor: 'gray',
-        // borderWidth: 1,
-        flex:1,
-        fontSize: 15,
-        borderRadius:10,
-        backgroundColor:'#e3e3e3',
-        paddingHorizontal: 10,
     },
     imageContainer: {
         justifyContent:'center',
@@ -136,15 +131,6 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         textAlign:'center',
         flex: 1
-    },
-    input: {
-        height: 30,
-        borderColor: 'gray',
-        borderWidth: 1,
-        flex:1,
-        borderRadius:10,
-        paddingHorizontal:10,
-        marginBottom: 5
     },
     remove: {
         flex: 1,
