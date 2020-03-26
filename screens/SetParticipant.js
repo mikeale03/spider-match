@@ -5,6 +5,8 @@ import { addParticipant, updateParticipant } from '../redux/actions';
 import Header from '../components/custom/Header';
 import Spiders from '../components/set-participant/SetSpiders';
 import ErrorBoundary from  '../components/error-catch/ErrorBoundary';
+import SMTextInput from '../components/custom/SMTextInput';
+import SMImage from '../components/custom/SMImage';
 
 export default function SetParticipant({route, navigation}) {
     const dispatch = useDispatch();
@@ -67,14 +69,11 @@ export default function SetParticipant({route, navigation}) {
                 <ScrollView keyboardShouldPersistTaps='always'>
                     <View style={styles.innerContainer}>
                         <View style={styles.profilePicContainer}>
-                            <View style={styles.picWrapper}>
-
-                            </View>
+                            <SMImage shape={'circle'} />
                         </View>
                         <View style={styles.inputWrapper}>
-                            <TextInput
-                                style={styles.input}
-                                value = {name}
+                            <SMTextInput
+                                value={name}
                                 onChangeText={setName}
                                 autoFocus={true}
                                 />
@@ -106,12 +105,6 @@ const styles = StyleSheet.create({
         height:150,
         justifyContent:'center',
         alignItems:'center',
-    },
-    picWrapper: {
-        backgroundColor:'gray',
-        width: 100,
-        height: 100,
-        borderRadius: 50,
     },
     inputWrapper: {
         flexDirection:'row',

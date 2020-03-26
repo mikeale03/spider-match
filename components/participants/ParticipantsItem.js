@@ -6,6 +6,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 import { deleteParticipant } from '../../redux/actions';
 import ErrorCatch from '../error-catch/ErrorBoundary';
+import SMImage from '../custom/SMImage';
 
 function Item({participant}) {
     const navigation = useNavigation();
@@ -28,7 +29,7 @@ function Item({participant}) {
                 >
 
                     <View style={{flex:4, alignItems:'center', flexDirection:'row'}}>
-                        <View style={{height:50,width:50,borderRadius:25,backgroundColor:'gray'}} />
+                        <SMImage shape='circle' size={50} />
                         <Text style={{paddingStart: 10, fontSize:15}} numberOfLines={2}>{participant.name}</Text>
                     </View>
 
