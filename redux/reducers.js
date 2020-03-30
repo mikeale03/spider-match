@@ -10,7 +10,7 @@ const DELETE_CHECK = 'DELETE_CHECK';
 const initialState = [
     {
         key:'1',
-        name:'Mga Gwpapo',
+        name:'Mga Gwapo',
         spiders: [
             
             {
@@ -51,6 +51,49 @@ const initialState = [
             }
         ]
     },
+    {
+        key:'2',
+        name:'Mga Maot',
+        spiders: [
+            
+            {
+                key: '1',
+                parentKey:'1',
+                image:'',
+                weight:480,
+                otherDetails:'',
+                isJoker:false,
+                status:'No Match',
+            },
+            {
+                key: '2',
+                parentKey:'1',
+                image:'',
+                weight:501,
+                otherDetails:'daan ni',
+                isJoker:false,
+                status:'No Match',
+            },
+            {
+                key: '3',
+                parentKey:'1',
+                image:'',
+                weight:502,
+                otherDetails:'tae ni',
+                isJoker:false,
+                status:'No Match',
+            },
+            {
+                key: '4',
+                parentKey:'1',
+                image:'',
+                weight:531,
+                otherDetails:'',
+                isJoker:false,
+                status:'No Match',
+            }
+        ]
+    },
 ];
 
 const participantsReducer = (state = initialState, action) => {
@@ -77,8 +120,8 @@ const participantsReducer = (state = initialState, action) => {
 
 const matchReducer = (state = [], action)  => {
     switch(action.type) {
-        case 'UPDATE_MATCH':
-            return action.state;
+        case 'UPDATE_MATCHES':
+            return action.matches;
         default:
             return state;
     }
@@ -99,6 +142,6 @@ const notMatchReducer = (state = initialState, action) => {
 
 export default combineReducers({
     participants:participantsReducer,
-    match: matchReducer,
+    matches: matchReducer,
     notMatch: notMatchReducer,
 })

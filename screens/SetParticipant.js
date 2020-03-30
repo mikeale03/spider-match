@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { useDispatch } from "react-redux";
-import { addParticipant, updateParticipant } from '../redux/actions';
+import { addParticipant, updateParticipant, addNotMatch } from '../redux/actions';
 import Header from '../components/custom/Header';
 import Spiders from '../components/set-participant/SetSpiders';
 import ErrorBoundary from  '../components/error-catch/ErrorBoundary';
@@ -43,27 +43,26 @@ export default function SetParticipant({route, navigation}) {
 
     const setParticipant = () => {
         const newSpiders = [...spiders].sort((a,b) => a.weight - b.weight );
+        const newParticipant = { ...participant, name, spiders:newSpiders };
+
+        dispatch(addNotMatch(newParticipant));
         if(route.params) {
-            dispatch(updateParticipant({
-                ...participant, name, spiders:newSpiders
-            }));
+            dispatch(updateParticipant(newParticipant));
         }
         else {
-            const key = Date.now().toString();
-            dispatch(addParticipant({
-                ...participant, key, name, spiders:newSpiders
-            }));
+            dispatch(addParticipant(newParticipant));
         }
+
         navigation.goBack();
     }
 
     const onCloseHandler= () => {
         navigation.goBack();
     }
-    
+
     return (
         <View style={styles.container}>
-            
+
             <ErrorBoundary>
                 <KeyboardAvoidingView behavior="padding" enabled>
                 <ScrollView keyboardShouldPersistTaps='always'>
