@@ -20,7 +20,6 @@ export default function SetParticipant({route, navigation}) {
     useEffect(() => {
         setName(participant.name);
         setSpiders(participant.spiders);
-        console.log(name);
     }, [route.params]); 
 
     const onEditSpider = (spider) => {
@@ -42,15 +41,18 @@ export default function SetParticipant({route, navigation}) {
     }
 
     const setParticipant = () => {
-        const newSpiders = [...spiders].sort((a,b) => a.weight - b.weight );
+        let newSpiders = spiders.map( (item) => ({...item,participantName:name}) );
+        newSpiders.sort((a,b) => a.weight - b.weight );
+        console.log(newSpiders);
         const newParticipant = { ...participant, name, spiders:newSpiders };
 
-        dispatch(addNotMatch(newParticipant));
+        
         if(route.params) {
             dispatch(updateParticipant(newParticipant));
         }
         else {
             dispatch(addParticipant(newParticipant));
+            dispatch(addNotMatch(newParticipant));
         }
 
         navigation.goBack();

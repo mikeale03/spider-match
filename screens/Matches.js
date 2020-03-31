@@ -5,7 +5,8 @@ import CreateMatch from '../components/matches/CreateMatch';
 import ErrorBoundary from '../components/error-catch/ErrorBoundary'
 import { useSelector, useDispatch } from 'react-redux';
 import { FlatList } from 'react-native-gesture-handler';
-import { updateMatches } from "../redux/actions";
+import { updateMatches, updateNotMatch } from "../redux/actions";
+import { matchAllParticipantsSpiders } from '../custom-modules/matchMaker';
 
 function Matches({navigation}) {
   
@@ -19,9 +20,34 @@ function Matches({navigation}) {
       key:Date.now().toString(),
       match
     };
-    const newMatches = [...matches,newMatch]
-    dispatch(updateMatches(newMatches))
-    console.log(match);
+    const newMatches = [newMatch, ...matches];
+    const newNotMatch = notMatch.reduce((acc, item) => {
+      if(item.key === match[0].parentKey) {
+        const newSpiders = item.spiders.filter((val) => val.key !== match[0].key );
+        acc.push({...item, spiders:newSpiders});
+
+      } else if (item.key === match[1].parentKey) {
+        const newSpiders = item.spiders.filter((val) => val.key !== match[1].key );
+        acc.push({...item, spiders:newSpiders});
+
+      } else
+        acc.push(item);
+      return acc;
+    },[]);
+    dispatch(updateMatches(newMatches));
+    dispatch(updateNotMatch(newNotMatch));
+    setIsCreate(false);
+  }
+
+  const onCancelHandler = () => {
+    setIsCreate(false);
+  }
+
+  const autoMatchAll = () => {
+    const result = matchAllParticipantsSpiders(notMatch);
+    console.log(result.match);
+    dispatch(updateMatches(matches.concat(result.match)));
+    dispatch(updateNotMatch(result.notMatch));
   }
 
   useEffect(() => {
@@ -63,11 +89,13 @@ function Matches({navigation}) {
                 <Button title="Auto match"/>
               </View>
               <View>
-                <Button title="Auto match all"/>
+                <Button title="Auto match all"
+                  onPress={autoMatchAll}
+                />
               </View>
             </View>
 
-            { isCreate && <CreateMatch notMatch={notMatch} onDone={onDoneHandler}/> }
+            { isCreate && <CreateMatch notMatch={notMatch} onDone={onDoneHandler} onCancel={onCancelHandler}/> }
 
             <FlatList
               data={matches}
@@ -75,7 +103,7 @@ function Matches({navigation}) {
                 <View style={styles.matchContainer}>
                   <View style={styles.spiderContainer}>
                     <View>
-                      <Text>{item.match[0].participant}</Text>
+                      <Text>{item.match[0].participantName}</Text>
                     </View>
                     <View>
                       <Text>Wt: {item.match[0].weight.toString()}</Text>
@@ -88,7 +116,7 @@ function Matches({navigation}) {
 
                   <View style={styles.spiderContainer}>
                     <View>
-                      <Text>{item.match[1].participant}</Text>
+                      <Text>{item.match[1].participantName}</Text>
                     </View>
                     <View>
                       <Text>Wt: {item.match[1].weight.toString()}</Text>

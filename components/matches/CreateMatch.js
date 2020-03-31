@@ -32,14 +32,12 @@ export default function CreateMatch({notMatch, onCancel, onDone}) {
         const newMatch = [...match];
         newMatch[0] = value;
         setMatch(newMatch);
-        console.log(newMatch);
     }
 
     const onSelectSpider2Handler = (value) => {
         const newMatch = [...match];
         newMatch[1] = value;
         setMatch(newMatch);
-        console.log(newMatch);
     }
 
     const onDoneHandler = () => {

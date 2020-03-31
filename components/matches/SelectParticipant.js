@@ -11,8 +11,6 @@ export default function SelectParticipant({items, onSelectParticipant, onSelectS
     
     const setSpiderHandler = (value) => {
         setSpider(value);
-        if(value)
-            value = {...value,participant:participant.name};
         onSelectSpider(value);
     }
 
@@ -21,7 +19,7 @@ export default function SelectParticipant({items, onSelectParticipant, onSelectS
         onSelectParticipant(value);
         if(value) {
             const items = value.spiders.map((item) => ({
-                label:'Wt: '+item.weight+' - '+item.otherDetails,
+                label:'Wt: '+item.weight+'  '+item.otherDetails,
                 value: item,
                 key:item.key,
                 color:'black'

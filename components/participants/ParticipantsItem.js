@@ -17,7 +17,7 @@ function Item({participant}) {
     };
 
     const deleteHandler = () => {
-        dispatch(deleteParticipant(participant.key));
+        dispatch(deleteParticipant(participant));
     }
     
     return (
