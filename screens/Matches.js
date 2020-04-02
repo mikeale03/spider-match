@@ -6,7 +6,7 @@ import ErrorBoundary from '../components/error-catch/ErrorBoundary'
 import { useSelector, useDispatch } from 'react-redux';
 import { FlatList } from 'react-native-gesture-handler';
 import { updateMatches, updateNotMatch } from "../redux/actions";
-import { matchAllParticipantsSpiders } from '../custom-modules/matchMaker';
+import { matchAllParticipantsSpiders, getSingleMatchWithLeastDif } from '../custom-modules/matchMaker';
 
 function Matches({navigation}) {
   
@@ -45,9 +45,16 @@ function Matches({navigation}) {
 
   const autoMatchAll = () => {
     const result = matchAllParticipantsSpiders(notMatch);
-    console.log(result.match);
-    dispatch(updateMatches(matches.concat(result.match)));
+    dispatch(updateMatches(matches.concat(result.matches)));
     dispatch(updateNotMatch(result.notMatch));
+  }
+
+  const autoMatch = () => {
+    const result = getSingleMatchWithLeastDif(notMatch);
+    if(result.match !== null) {
+      dispatch(updateMatches([result.match, ...matches]));
+      dispatch(updateNotMatch(result.notMatch));
+    }
   }
 
   useEffect(() => {
@@ -86,7 +93,9 @@ function Matches({navigation}) {
                 />
               </View>
               <View>
-                <Button title="Auto match"/>
+                <Button title="Auto match"
+                  onPress={autoMatch}
+                />
               </View>
               <View>
                 <Button title="Auto match all"
