@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Picker, Button } from 'react-native';
 import { useSelector } from "react-redux";
 import PickerSelect from 'react-native-picker-select';
 import SelectParticipant from './SelectParticipant';
+import SMButton from '../custom/SMButton';
 
 export default function CreateMatch({notMatch, onCancel, onDone}) {
     
@@ -79,14 +80,10 @@ export default function CreateMatch({notMatch, onCancel, onDone}) {
 
             <View style={styles.buttonsContainer}>
                 <View style={styles.buttonsWrapper}>
-                    <Button title='Cancel' 
-                        onPress={onCancel}
-                    />
+                    <SMButton theme="green"  title='Cancel' onPress={onCancel}/>
                 </View>
                 <View style={styles.buttonsWrapper}>
-                    <Button title='Done' 
-                        onPress={onDoneHandler}
-                    />
+                    <SMButton theme="green" title='Done' onPress={onDoneHandler}/>
                 </View>
             </View>
         </View>
@@ -94,18 +91,19 @@ export default function CreateMatch({notMatch, onCancel, onDone}) {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 10
+    },
     columnContainer: {
         flexDirection:'row',
-        borderWidth:1,
-        borderColor:'black'
     },
     column: {
         flex:1
     },
     pickerWrapper: {
         paddingVertical:10,
-        borderColor:'red',
-        borderWidth:1,
     },
     vsWrapper: {
         width:65,
@@ -113,12 +111,13 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     buttonsContainer: {
-        justifyContent:'center',
+        justifyContent:'flex-end',
         flexDirection:'row',
-        marginVertical:15,
+        marginTop:20,
+        marginBottom:10
     },
     buttonsWrapper: {
-        marginHorizontal:30
+        marginHorizontal:5
     }
 });
 

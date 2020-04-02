@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FlatList } from 'react-native-gesture-handler';
 import { updateMatches, updateNotMatch } from "../redux/actions";
 import { matchAllParticipantsSpiders } from '../custom-modules/matchMaker';
+import SMButton from '../components/custom/SMButton';
 
 function Matches({navigation}) {
   
@@ -80,18 +81,15 @@ function Matches({navigation}) {
               </Picker>
             </View>
             <View style={styles.matchButtonContainer}>
+
               <View >
-                <Button title="Create match"
-                  onPress={() => {setIsCreate(!isCreate)}}
-                />
+                <SMButton title="Create match" onPress={() => {setIsCreate(!isCreate)}} />
               </View>
               <View>
-                <Button title="Auto match"/>
+                <SMButton title="Auto match"/>
               </View>
               <View>
-                <Button title="Auto match all"
-                  onPress={autoMatchAll}
-                />
+                <SMButton title="Auto match all" onPress={autoMatchAll}/>
               </View>
             </View>
 
@@ -148,6 +146,8 @@ const styles = StyleSheet.create({
   },
   matchContainer: {
     flexDirection:'row',
+    borderBottomColor: '#ccc',
+    borderBottomWidth: .75,
   },
   matchButtonContainer: {
     flexDirection:'row',
@@ -157,9 +157,7 @@ const styles = StyleSheet.create({
   },
   spiderContainer: {
     flex:5,
-    height:100,
-    borderColor:'green',
-    borderWidth:1,
+    height:70,
     justifyContent:'center',
     alignItems:'center'
   },
@@ -167,5 +165,9 @@ const styles = StyleSheet.create({
     flex:2,
     justifyContent:'center',
     alignItems:'center'
+  },
+  button: {
+    color: '#23A32F',
+    backgroundColor: '#333332'
   }
 });

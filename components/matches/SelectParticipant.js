@@ -34,7 +34,7 @@ export default function SelectParticipant({items, onSelectParticipant, onSelectS
             <View style={styles.pickerWrapper}>
                 <PickerSelect
                     style={pickerSelectStyles}
-                    placeholder={{label:'Select participant', value:null, color:'#9EA0A4'}}
+                    placeholder={{label:'Participant', value:null, color:'#9EA0A4'}}
                     value = {participant}
                     onValueChange={setParticipantHandler}
                     items={items}
@@ -43,7 +43,7 @@ export default function SelectParticipant({items, onSelectParticipant, onSelectS
             <View style={styles.pickerWrapper}>
                 <PickerSelect
                     style={pickerSelectStyles}
-                    placeholder={{label:'Select spiders', value:null, color:'#9EA0A4'}}
+                    placeholder={{label:'Spider', value:null, color:'#9EA0A4'}}
                     value = {spider}
                     onValueChange={setSpiderHandler}
                     items={spiderItems}
@@ -59,9 +59,6 @@ const styles = StyleSheet.create({
         flex:1,
     },
     pickerWrapper: {
-        paddingVertical:10,
-        borderColor:'red',
-        borderWidth:1,
         //flex:1,
         //flexDirection:'row',
     },
