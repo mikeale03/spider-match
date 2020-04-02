@@ -244,7 +244,7 @@ export const getSingleMatchWithLeastDif = (participants) => {
   let participantsCopy = [...participants];
   let len = participants.length;
 
-  if(len)
+  if(len>1)
     do {
       let { match, notMatch, nxtMinDif } = getSingleMatch(participantsCopy, targetDif);
       targetDif = nxtMinDif;
