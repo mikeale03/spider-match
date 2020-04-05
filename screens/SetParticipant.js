@@ -64,9 +64,7 @@ export default function SetParticipant({route, navigation}) {
 
     return (
         <View style={styles.container}>
-
             <ErrorBoundary>
-                <KeyboardAvoidingView behavior="padding" enabled>
                 <ScrollView keyboardShouldPersistTaps='always'>
                     <View style={styles.innerContainer}>
                         <View style={styles.profilePicContainer}>
@@ -79,13 +77,14 @@ export default function SetParticipant({route, navigation}) {
                                 autoFocus={true}
                                 />
                         </View>
+                        <KeyboardAvoidingView behavior="margin" enabled>
                         <Spiders spiders={spiders} 
                             onEdit={onEditSpider} 
                             onAdd={onAddSpider} 
                             onDelete={onDeleteSpider} />
+                        </KeyboardAvoidingView>
                     </View>
                 </ScrollView>
-                </KeyboardAvoidingView>
             </ErrorBoundary>
             <Header title="Set Participant" editMode="true"
                 onDone={setParticipant} onClose={onCloseHandler}/>

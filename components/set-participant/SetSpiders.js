@@ -56,7 +56,6 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
                                 value={item.weight ? item.weight.toString() : null}
                                 keyboardType='numeric'
                                 onChangeText={(val) => setWeightHandler(val, index)}
-                                autoFocus={true}
                                 blurOnSubmit={false}
                             />
                         </View>

@@ -12,7 +12,6 @@ const initialState = [
         key:'1',
         name:'Mga Gwapo',
         spiders: [
-            
             {
                 key: '1',
                 parentKey:'1',
@@ -179,7 +178,7 @@ const initialState = [
                 parentKey:'4',
                 participantName:'Kigz',
                 image:'',
-                weight:571,
+                weight:531,
                 otherDetails:'baho ni',
                 isJoker:false,
                 status:'No Match',
@@ -189,7 +188,7 @@ const initialState = [
                 parentKey:'4',
                 participantName:'Kigz',
                 image:'',
-                weight:512,
+                weight:542,
                 otherDetails:'kigwa ni',
                 isJoker:false,
                 status:'No Match',
@@ -199,7 +198,7 @@ const initialState = [
                 parentKey:'4',
                 participantName:'Kigz',
                 image:'',
-                weight:541,
+                weight:549,
                 otherDetails:'',
                 isJoker:false,
                 status:'No Match',

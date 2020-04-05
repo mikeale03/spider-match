@@ -39,6 +39,7 @@ export const getMatches = (participant1, participant2, targetDif=0) => {
 
       matches.push({
         key:Date.now().toString()+(ctr++),
+        isMarked:false,
         match: [item, spiders2[result.index] ] 
       });
 

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Picker, Button } from 'react-native';
-import { useSelector } from "react-redux";
-import PickerSelect from 'react-native-picker-select';
 import SelectParticipant from './SelectParticipant';
 import SMButton from '../custom/SMButton';
 
