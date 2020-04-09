@@ -14,3 +14,10 @@ export const deleteMarked = (matches) => {
     });
     return {matches: newMatches, markedItem};
 }
+
+export const markAll = (matches) => {
+    const newMatches = matches.map((item) => {
+        return {...item, isMarked:true};
+    });
+    return newMatches;
+}

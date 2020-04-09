@@ -45,4 +45,22 @@ export const addNotMatchArr = (notMatch, matches) => {
         newNotMatch = addNotMatchObj(newNotMatch, matches[i]);
     }
     return newNotMatch;
-} 
+}
+
+export const removeNotMatch = (notMatch, match) => {
+    const newNotMatch = notMatch.reduce((acc, item) => {
+        if(item.key === match[0].parentKey) {
+          const newSpiders = item.spiders.filter((val) => val.key !== match[0].key );
+          acc.push({...item, spiders:newSpiders});
+  
+        } else if (item.key === match[1].parentKey) {
+          const newSpiders = item.spiders.filter((val) => val.key !== match[1].key );
+          acc.push({...item, spiders:newSpiders});
+  
+        } else
+          acc.push(item);
+        return acc;
+      },[]);
+      
+    return newNotMatch;
+}

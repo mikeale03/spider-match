@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Picker, BackHandler } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import Header from '../components/custom/Header';
 import CreateMatch from '../components/matches/CreateMatch';
 import ErrorBoundary from '../components/error-catch/ErrorBoundary'
@@ -8,10 +9,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FlatList, TouchableNativeFeedback } from 'react-native-gesture-handler';
 import { updateMatches, updateNotMatch } from "../redux/actions";
 import SMButton from '../components/custom/SMButton';
-import { matchAllParticipantsSpiders, getSingleMatchWithLeastDif } from '../custom-modules/matchMaker';
-import { matchResetMark, deleteMarked } from '../custom-modules/matchModifier';
-import { addNotMatchArr } from '../custom-modules/notMatchUpdater';
-import { AntDesign } from '@expo/vector-icons';
+import { matchAllParticipantsSpiders, getSingleMatchWithLeastDif } from '../custom-modules/autoMatchMaker';
+import * as MatchesUpdater from '../custom-modules/matchesUpdater';
+import { addNotMatchArr, removeNotMatch } from '../custom-modules/notMatchUpdater';
+import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
 
 
 function Matches({navigation}) {
@@ -29,19 +30,7 @@ function Matches({navigation}) {
       match
     };
     const newMatches = [newMatch, ...matches];
-    const newNotMatch = notMatch.reduce((acc, item) => {
-      if(item.key === match[0].parentKey) {
-        const newSpiders = item.spiders.filter((val) => val.key !== match[0].key );
-        acc.push({...item, spiders:newSpiders});
-
-      } else if (item.key === match[1].parentKey) {
-        const newSpiders = item.spiders.filter((val) => val.key !== match[1].key );
-        acc.push({...item, spiders:newSpiders});
-
-      } else
-        acc.push(item);
-      return acc;
-    },[]);
+    const newNotMatch = removeNotMatch(notMatch, match);
     dispatch(updateMatches(newMatches));
     dispatch(updateNotMatch(newNotMatch));
     setIsCreate(false);
@@ -65,54 +54,63 @@ function Matches({navigation}) {
     }
   }
 
-  const onMark = (match) => {
+  const onMark = (matchItem) => {
     const newMatches = matches.map((item) => {
       return (
-        item.key === match.key ? {...item, isMarked: !match.isMarked} : item
+        item.key === matchItem.key ? {...item, isMarked: !matchItem.isMarked} : item
       )
     });
     dispatch(updateMatches(newMatches));
   }
 
-  const matchItemLongPressHandler = () => {
-    setIsShowCheckBox(!isShowCheckBox);
+  const matchItemLongPressHandler = (matchItem) => {
+    onMark(matchItem);
+    setIsShowCheckBox(true);
   }
   
   const resetMark = () => {
-    const newMatches = matchResetMark(matches);
+    console.log(matches.length);
+    const newMatches = MatchesUpdater.matchResetMark(matches);
     dispatch(updateMatches(newMatches));
     setIsShowCheckBox(false);
   }
 
   const deleteMarkedHandler = () => {
-    const result = deleteMarked(matches);
-    console.log(result.markedItem);
+    const result = MatchesUpdater.deleteMarked(matches);
     const newNotMatch = addNotMatchArr(notMatch, result.markedItem);
-    console.log(result.matches);
+    setIsShowCheckBox(false);
     dispatch(updateMatches(result.matches));
     dispatch(updateNotMatch(newNotMatch));
+  }
+
+  const markAllHandler = () => {
+    const newMatches = MatchesUpdater.markAll(matches);
+    dispatch(updateMatches(newMatches));
   }
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: false
     });
-    const unsubscribe = navigation.addListener('blur', () => {
-      setIsCreate(false);
-    });
-    BackHandler.addEventListener("hardwareBackPress", () => {
-      setIsCreate(false);
-      resetMark();
-      return true;
-    });
-
-    return () => {
-      unsubscribe;
-      BackHandler.removeEventListener("hardwareBackPress");
-    }
   }, []);
 
-  
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if(isCreate || isShowCheckBox) {
+          setIsCreate(false);
+          setIsShowCheckBox(false);
+          resetMark();
+          return true;
+        } else {
+          return false;
+        }
+      }
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);;
+
+    }, [isCreate, isShowCheckBox, resetMark])
+  );
 
   return (
       <View style={styles.container}>
@@ -131,15 +129,28 @@ function Matches({navigation}) {
                     <Picker.Item label="Cancelled" value="name" />
                 </Picker>
               </View>
-            <TouchableNativeFeedback
-              onPress={deleteMarkedHandler}
-            >
-              <View style={{justifyContent:'center', alignItems:'center', width:50, height:50, borde}}>
-                <AntDesign name='delete' size={20} color="#A36023" />
-                <Text>Delete</Text>
-              </View>
-            </TouchableNativeFeedback>
+              { isShowCheckBox && (
+                <View style={styles.onCheckButtonsContainer}>
 
+                  <TouchableNativeFeedback
+                    onPress={deleteMarkedHandler}
+                  >
+                    <View style={styles.onCheckButtons}>
+                      <AntDesign name='delete' size={20} color="#A36023" />
+                      <Text style={{fontSize:10}}>Delete</Text>
+                    </View>
+                  </TouchableNativeFeedback>
+                  <TouchableNativeFeedback
+                    onPress={markAllHandler}
+                  >
+                    <View style={styles.onCheckButtons}>
+                      <FontAwesome5 name='check-double' size={20} color="#A36023" />
+                      <Text style={{fontSize:10}}>Check all</Text>
+                    </View>
+                  </TouchableNativeFeedback>
+
+                </View>
+              )}
             </View>
             <View style={styles.matchButtonContainer}>
 
@@ -187,12 +198,8 @@ const styles = StyleSheet.create({
   filterContainer: {
     flexDirection: 'row',
     alignItems:'center',
-    padding:20,
-  },
-  matchContainer: {
-    flexDirection:'row',
-    borderBottomColor: '#ccc',
-    borderBottomWidth: .75,
+    justifyContent:'space-between',
+    paddingVertical:20,
   },
   matchButtonContainer: {
     flexDirection:'row',
@@ -200,23 +207,22 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     marginBottom:20,
   },
-  participantNameText: {
-    textAlign:'center',
-    fontWeight:'bold',
-  },
-  spiderContainer: {
-    flex:5,
-    height:70,
-    justifyContent:'center',
-    alignItems:'center'
-  },
-  vsContainer: {
-    flex:2,
-    justifyContent:'center',
-    alignItems:'center'
-  },
   button: {
     color: '#23A32F',
     backgroundColor: '#333332'
+  },
+  onCheckButtons: {
+    justifyContent:'center',
+    alignItems:'center',
+    width:50,
+    height:50,
+    borderRadius:10,
+    borderWidth:1,
+    marginStart:10,
+    borderColor:'#d4d4d4',
+  },
+  onCheckButtonsContainer: {
+    flexDirection:'row',
+    alignItems:'center',
   }
 });

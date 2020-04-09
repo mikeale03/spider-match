@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { useDispatch } from "react-redux";
 import { addParticipant, updateParticipant, addNotMatch } from '../redux/actions';
 import Header from '../components/custom/Header';
@@ -43,9 +43,7 @@ export default function SetParticipant({route, navigation}) {
     const setParticipant = () => {
         let newSpiders = spiders.map( (item) => ({...item,participantName:name}) );
         newSpiders.sort((a,b) => a.weight - b.weight );
-        console.log(newSpiders);
         const newParticipant = { ...participant, name, spiders:newSpiders };
-
         
         if(route.params) {
             dispatch(updateParticipant(newParticipant));
@@ -78,10 +76,10 @@ export default function SetParticipant({route, navigation}) {
                                 />
                         </View>
                         <KeyboardAvoidingView behavior="margin" enabled>
-                        <Spiders spiders={spiders} 
-                            onEdit={onEditSpider} 
-                            onAdd={onAddSpider} 
-                            onDelete={onDeleteSpider} />
+                            <Spiders spiders={spiders} 
+                                onEdit={onEditSpider} 
+                                onAdd={onAddSpider} 
+                                onDelete={onDeleteSpider} />
                         </KeyboardAvoidingView>
                     </View>
                 </ScrollView>

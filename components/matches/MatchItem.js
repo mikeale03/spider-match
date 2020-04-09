@@ -6,10 +6,13 @@ export default function MatchItem({item, onMark, onLongPress, showCheckBox}) {
     const onMarkHandler = () => {
         onMark(item);
     }
+    const onLongPressHandler = () => {
+        onLongPress(item);
+    }
 
     return (
         <TouchableNativeFeedback
-                onLongPress={onLongPress}
+                onLongPress={onLongPressHandler}
         >
             <View style={styles.matchContainer}>
                 <View style={styles.spiderContainer}>
