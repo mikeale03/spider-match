@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Picker, Button } from 'react-native';
+import { View, StyleSheet, Text, } from 'react-native';
 import SelectParticipant from './SelectParticipant';
 import SMButton from '../custom/SMButton';
 
@@ -119,16 +119,5 @@ const styles = StyleSheet.create({
     }
 });
 
-const pickerSelectStyles = StyleSheet.create({
-    inputAndroid: {
-      fontSize: 16,
-      paddingHorizontal: 10,
-      paddingVertical: 8,
-      borderWidth: 0.5,
-      borderColor: 'purple',
-      borderRadius: 8,
-      color: 'black',
-      paddingRight: 30, // to ensure the text is never behind the icon
-    },
-});
+
   

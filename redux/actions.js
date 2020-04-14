@@ -34,3 +34,8 @@ export const updateMatches = (matches) => ({
     type: UPDATE_MATCHES,
     matches
 });
+
+export const updateAllies = (allies) => ({
+    type: 'UPDATE_ALLIES',
+    allies,
+});

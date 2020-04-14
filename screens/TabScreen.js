@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Participants from './Participants';
 import Matches from './Matches';
+import Allies from './Allies';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
@@ -11,6 +12,9 @@ export default function TabScreen() {
         <Tab.Navigator tabBarOptions={options.navigator} >
             <Tab.Screen name="Participants" component={Participants} 
                 options={options.participantsScreen}
+            />
+            <Tab.Screen name="Allies" component={Allies} 
+                
             />
             <Tab.Screen name="Matches" component={Matches} 
                 options={options.matchesScreen}
