@@ -13,7 +13,7 @@ export default function CreateMatch({notMatch, onCancel, onDone}) {
 
     const onSelectParticipant1Handler = (value) => {
         if(value) {
-            const newItems = items.filter((item) => value.key !== item.key);
+            const newItems = items.filter((item) => (value.key !== item.key && value.alliesKey !== item.value.alliesKey));
             setParticipant2Items(newItems);
         } else 
         setParticipant2Items(items);
@@ -21,7 +21,7 @@ export default function CreateMatch({notMatch, onCancel, onDone}) {
 
     const onSelectParticipant2Handler = (value) => {
         if(value) {
-            const newItems = items.filter((item) => value.key !== item.key);
+            const newItems = items.filter((item) => (value.key !== item.key && value.alliesKey !== item.value.alliesKey));
             setParticipant1Items(newItems);
         } else 
         setParticipant1Items(items);

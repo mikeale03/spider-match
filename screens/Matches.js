@@ -22,7 +22,7 @@ function Matches({navigation}) {
   let matches = useSelector((state) => state.matches);
   const [isCreate, setIsCreate] = useState(false);
   const [isShowCheckBox, setIsShowCheckBox] = useState(false);
-
+  
   const onDoneHandler = (match) => {
     const newMatch = {
       key:Date.now().toString(),
