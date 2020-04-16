@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import {participants, allies} from '../components/TempData';
 
 const ADD = 'ADD';
 const UPDATE_PARTICIPANT = 'UPDATE_PARTICIPANT';
@@ -7,215 +8,7 @@ const DELETE_INDEX = 'DELETE_INDEX';
 const DELETE_KEY = 'DELETE_KEY';
 const DELETE_CHECK = 'DELETE_CHECK';
 
-const initialState = [
-    {
-        key:'1',
-        name:'Mga Gwapo',
-        spiders: [
-            {
-                key: '1',
-                parentKey:'1',
-                participantName:'Mga Gwapo',
-                image:'',
-                weight:480,
-                otherDetails:'bag.o ni',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '2',
-                parentKey:'1',
-                participantName:'Mga Gwapo',
-                image:'',
-                weight:501,
-                otherDetails:'bag.o ni',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '3',
-                parentKey:'1',
-                participantName:'Mga Gwapo',
-                image:'',
-                weight:502,
-                otherDetails:'bag.o ni',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '4',
-                parentKey:'1',
-                participantName:'Mga Gwapo',
-                image:'',
-                weight:531,
-                otherDetails:'bag.o ni',
-                isJoker:false,
-                status:'No Match',
-            }
-        ]
-    },
-    {
-        key:'2',
-        name:'Mga Maot',
-        spiders: [
-            
-            {
-                key: '1',
-                parentKey:'2',
-                participantName:'Mga Maot',
-                image:'',
-                weight:480,
-                otherDetails:'',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '2',
-                parentKey:'2',
-                participantName:'Mga Maot',
-                image:'',
-                weight:501,
-                otherDetails:'daan ni',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '3',
-                parentKey:'2',
-                participantName:'Mga Maot',
-                image:'',
-                weight:502,
-                otherDetails:'tae ni',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '4',
-                parentKey:'2',
-                participantName:'Mga Maot',
-                image:'',
-                weight:531,
-                otherDetails:'',
-                isJoker:false,
-                status:'No Match',
-            }
-        ]
-    },
-    {
-        key:'3',
-        name:'Mga Baho',
-        spiders: [
-            
-            {
-                key: '1',
-                parentKey:'3',
-                participantName:'Mga Baho',
-                image:'',
-                weight:480,
-                otherDetails:'',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '2',
-                parentKey:'3',
-                participantName:'Mga Baho',
-                image:'',
-                weight:501,
-                otherDetails:'daan ni',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '3',
-                parentKey:'3',
-                participantName:'Mga Baho',
-                image:'',
-                weight:502,
-                otherDetails:'tae ni',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '4',
-                parentKey:'3',
-                participantName:'Mga Baho',
-                image:'',
-                weight:531,
-                otherDetails:'',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '5',
-                parentKey:'3',
-                participantName:'Mga Baho',
-                image:'',
-                weight:621,
-                otherDetails:'',
-                isJoker:false,
-                status:'No Match',
-            }
-        ]
-    },
-    {
-        key:'4',
-        name:'Kigz',
-        spiders: [
-            
-            {
-                key: '1',
-                parentKey:'4',
-                participantName:'Kigz',
-                image:'',
-                weight:480,
-                otherDetails:'',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '2',
-                parentKey:'4',
-                participantName:'Kigz',
-                image:'',
-                weight:531,
-                otherDetails:'baho ni',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '3',
-                parentKey:'4',
-                participantName:'Kigz',
-                image:'',
-                weight:542,
-                otherDetails:'kigwa ni',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '4',
-                parentKey:'4',
-                participantName:'Kigz',
-                image:'',
-                weight:549,
-                otherDetails:'',
-                isJoker:false,
-                status:'No Match',
-            },
-            {
-                key: '5',
-                parentKey:'4',
-                participantName:'Kigz',
-                image:'',
-                weight:661,
-                otherDetails:'',
-                isJoker:false,
-                status:'No Match',
-            }
-        ]
-    },
-];
+const initialState = participants;
 
 const participantsReducer = (state = initialState, action) => {
     switch(action.type) {
@@ -234,6 +27,8 @@ const participantsReducer = (state = initialState, action) => {
                 return item.key === action.participant.key ?
                     action.participant : item;
             });
+        case 'UPDATE_PARTICIPANTS':
+            return action.participants;
         default:
             return state;
     }
@@ -261,8 +56,19 @@ const notMatchReducer = (state = initialState, action) => {
                 return item.key === action.participant.key ?
                     action.participant : item;
             });
+        case 'UPDATE_PARTICIPANTS':
+            return action.participants;
         case DELETE_PARTICIPANT:
             return state.filter((item) => item.key !== action.participant.key);
+        default:
+            return state;
+    }
+}
+
+const alliesReducer = (state = allies, action) => {
+    switch(action.type) {
+        case 'UPDATE_ALLIES':
+            return action.allies;
         default:
             return state;
     }
@@ -272,4 +78,5 @@ export default combineReducers({
     participants:participantsReducer,
     matches: matchReducer,
     notMatch: notMatchReducer,
+    allies: alliesReducer,
 })

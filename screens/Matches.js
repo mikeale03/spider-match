@@ -69,17 +69,16 @@ function Matches({navigation}) {
   }
   
   const resetMark = () => {
-    console.log(matches.length);
     const newMatches = MatchesUpdater.matchResetMark(matches);
     dispatch(updateMatches(newMatches));
     setIsShowCheckBox(false);
   }
 
   const deleteMarkedHandler = () => {
-    const result = MatchesUpdater.deleteMarked(matches);
-    const newNotMatch = addNotMatchArr(notMatch, result.markedItem);
+    const {newMatches, markedItem} = MatchesUpdater.deleteMarked(matches);
+    const newNotMatch = addNotMatchArr(notMatch, markedItem);
     setIsShowCheckBox(false);
-    dispatch(updateMatches(result.matches));
+    dispatch(updateMatches(newMatches));
     dispatch(updateNotMatch(newNotMatch));
   }
 
@@ -107,7 +106,7 @@ function Matches({navigation}) {
         }
       }
       BackHandler.addEventListener("hardwareBackPress", onBackPress);
-      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);;
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
 
     }, [isCreate, isShowCheckBox, resetMark])
   );
@@ -115,7 +114,7 @@ function Matches({navigation}) {
   return (
       <View style={styles.container}>
         <ErrorBoundary>
-          <Header title='Matches'/>
+          <Header title='Matches' onClose={() => navigation.goBack()} />
           <View style={styles.innerContainer}>
             <View style={styles.filterContainer}>
               <View style={{flexDirection:'row', alignItems:'center'}}>

@@ -14,5 +14,9 @@ export const margins = StyleSheet.create({
   ml2: {marginLeft: 15},
   mr2: {marginRight: 15},
   my2: {marginVertical: 15},
-  mx2: {marginHorizontal: 15}
+  mx2: {marginHorizontal: 15},
+});
+
+export const paddings = StyleSheet.create({
+  paddingHeader: {paddingTop:84},
 });

@@ -1,3 +1,5 @@
+import { participants } from "../components/TempData";
+
 const ADD = 'ADD';
 const UPDATE_PARTICIPANT = 'UPDATE_PARTICIPANT';
 const DELETE_PARTICIPANT = 'DELETE_PARTICIPANT';
@@ -13,6 +15,11 @@ export const addParticipant = (participant) => ({
 export const updateParticipant = (participant) => ({
     type: UPDATE_PARTICIPANT,
     participant
+});
+
+export const updateParticipants = (participants) => ({
+    type: 'UPDATE_PARTICIPANTS',
+    participants,
 });
 
 export const deleteParticipant = (participant) => ({
@@ -33,4 +40,9 @@ export const updateNotMatch = (notMatch) => ({
 export const updateMatches = (matches) => ({
     type: UPDATE_MATCHES,
     matches
+});
+
+export const updateAllies = (allies) => ({
+    type: 'UPDATE_ALLIES',
+    allies,
 });

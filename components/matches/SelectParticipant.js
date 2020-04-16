@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, } from "react-native";
 import PickerSelect from 'react-native-picker-select';
-import pickerSelectStyles from '../../utils/stylesheets/pickerSelect';
+import pickerSelectStyles from '../../utils/stylesheets/pickerSelectStyles';
 
 export default function SelectParticipant({items, onSelectParticipant, onSelectSpider}) {
 

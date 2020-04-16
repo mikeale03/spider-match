@@ -12,7 +12,7 @@ export const deleteMarked = (matches) => {
             return false;
         } else return true;
     });
-    return {matches: newMatches, markedItem};
+    return {newMatches, markedItem};
 }
 
 export const markAll = (matches) => {
