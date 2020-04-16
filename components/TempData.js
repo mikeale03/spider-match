@@ -273,6 +273,7 @@ export let participants = [
 export const allies = [
     {
         key: '1',
+        groupName:'Group 1',
         participants: [
             {
                 key: '1',

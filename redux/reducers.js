@@ -27,6 +27,8 @@ const participantsReducer = (state = initialState, action) => {
                 return item.key === action.participant.key ?
                     action.participant : item;
             });
+        case 'UPDATE_PARTICIPANTS':
+            return action.participants;
         default:
             return state;
     }
@@ -54,6 +56,8 @@ const notMatchReducer = (state = initialState, action) => {
                 return item.key === action.participant.key ?
                     action.participant : item;
             });
+        case 'UPDATE_PARTICIPANTS':
+            return action.participants;
         case DELETE_PARTICIPANT:
             return state.filter((item) => item.key !== action.participant.key);
         default:

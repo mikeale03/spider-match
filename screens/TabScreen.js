@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Participants from './Participants';
 import Matches from './Matches';
 import Allies from './Allies';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, Feather } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,7 +14,7 @@ export default function TabScreen() {
                 options={options.participantsScreen}
             />
             <Tab.Screen name="Allies" component={Allies} 
-                
+                options={options.alliesScreen}
             />
             <Tab.Screen name="Matches" component={Matches} 
                 options={options.matchesScreen}
@@ -34,6 +34,12 @@ const options = {
         tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="users" size={size} color={color} />
         ),
+    },
+    alliesScreen: {
+        tabBarIcon: ({ color, size }) => (
+            <Feather name="users" size={size} color={color} />
+        ),
+        tabBarVisible: false,
     },
     matchesScreen: {
         tabBarIcon: ({ color, size }) => (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList,} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import SMButton from '../components/custom/SMButton';
 import Header from '../components/custom/Header';
 import AlliesItem from '../components/allies/AlliesItem';
@@ -7,36 +8,27 @@ import  AlliesModal from '../components/allies/AlliesModal';
 import { paddings, } from '../utils/stylesheets/spacing';
 import ErrorBoundary from '../components/error-catch/ErrorBoundary'
 import { useSelector, useDispatch } from 'react-redux';
-import { updateAllies } from '../redux/actions';
+import { updateAllies, updateParticipants, updateParticipant } from '../redux/actions';
 
-export default function Allies(params) {
+export default function Allies({navigation, route}) {
 
     const [items, setItems] = useState([]);
     const [modal, setModal] = useState({isVisible:false, alliesIndex:null,});
-    const [alliesCopy, setAlliesCopy] = useState([]);
-    const [participantsCopy, setParticipantsCopy] = useState([]);
     const participants = useSelector( state => state.participants );
     const allies = useSelector( state => state.allies );
-
-    useEffect(() => {
-        const newItems = participants.reduce((acc, item) => {
-            const { key, name, } = item;
-            if(item.alliesKey === null) {
-                acc.push({ 
-                    key,
-                    name,
-                })
-            }
-            return acc;
-        },[]);
-        setItems(newItems);
-        setParticipantsCopy(participants);
-    },[participants]);
-
-    useEffect(() => {
-        setAlliesCopy([...allies]);
-    }, [allies])
+    const dispatch = useDispatch();
     
+    useEffect(() => {
+        navigation.setOptions = {
+            tabBarVisible:false,
+        }
+    },[]);
+
+    useEffect(() => {
+        const newItems = updateItems(participants)
+        setItems(newItems);
+    }, [participants]);
+
     const updateItems = (newParticipants) => {
         const newItems = newParticipants.reduce((acc, item) => {
             const { key, name, } = item;
@@ -48,23 +40,22 @@ export default function Allies(params) {
             }
             return acc;
         },[]);
-        setItems(newItems);
+        return newItems;
     }
 
-    const updateParticipantsCopy = (participant, alliesKey) => {
-        const newParticipants = participantsCopy.map((item) => {
+    const updateParticipantsAlliesKey = (participant, alliesKey, newParticipants = participants) => {
+        newParticipants = newParticipants.map((item) => {
             return item.key === participant.key ? {...item, alliesKey} : item
         });
-        setParticipantsCopy(newParticipants);
-        updateItems(newParticipants);
+        return newParticipants;
     }
 
     const onSelectHandler = (participant, alliesIndex) => {
-        const newAllies = [...alliesCopy];
+        const newAllies = [...allies];
         const alliesKey = newAllies[alliesIndex].key;
         newAllies[alliesIndex].participants.push(participant);
-        setAlliesCopy(newAllies);
-        updateParticipantsCopy(participant, alliesKey);
+        const newParticipants = updateParticipantsAlliesKey(participant, alliesKey);
+        dispatch(updateParticipants(newParticipants));
         setModal({
             isVisible:false,
             alliesIndex:null,
@@ -80,38 +71,73 @@ export default function Allies(params) {
     }
 
     const onDeleteParticipantHandler = (participant, alliesIndex) => {
-        const newAllies = [...alliesCopy];
+        const newAllies = [...allies]
         newAllies[alliesIndex].participants = newAllies[alliesIndex].participants.filter((item) => {
             return item.key === participant.key ? false : true ;
         });
-        setAlliesCopy(newAllies);
-        updateParticipantsCopy(participant, null);
+        
+        const newParticipants = updateParticipantsAlliesKey(participant, null);
+        dispatch(updateParticipants(newParticipants));
+        dispatch(updateAllies(newAllies));
+    }
+
+    const onAddNewGroupHandler = () => {
+        let ctr = allies.length+1;
+        if(ctr>1 && allies[allies.length-1].participants.length < 1) {
+            return
+        }
+        dispatch(updateAllies([...allies, { 
+            key:Date.now().toString(),
+            groupName:'Group '+ctr,
+            participants:[],
+        }]));
+    }
+
+    const onDeleteGroupHandler = (alliesIndex) => {
+        let newAllies = [...allies];
+        let alliesParticipants = newAllies[alliesIndex].participants;
+        const length = alliesParticipants.length;
+        let newParticipants;
+        if(length)
+            newParticipants = updateParticipantsAlliesKey(alliesParticipants[0], null);
+        if(length>1)
+            for(let i=1;i<length;i++) {
+                newParticipants = updateParticipantsAlliesKey(alliesParticipants[i], null, newParticipants);
+            }
+        if(newParticipants) {
+            dispatch(updateParticipants(newParticipants));
+        }
+        newAllies.splice(alliesIndex,1);
+        dispatch(updateAllies(newAllies));
     }
 
     return (
         <View style={[styles.container, paddings.paddingHeader]}>
-            <View style={{paddingHorizontal:10}}>
-                <FlatList
-                    data={alliesCopy}
-                    renderItem={({ item, index }) => (
-                        <AlliesItem 
-                            item={item}
-                            onAddParticipant={() => onAddParticipantHandler(index)}
-                            onDeleteParticipant={(participant) => onDeleteParticipantHandler(participant,index)}
-                        />
-                    )}
-                />
-                <View style={{alignItems:'center', marginTop:15}}>
-                    <SMButton title='Add New Group' />
+            <ErrorBoundary>
+                <View style={{paddingHorizontal:10, flex:1,}}>
+                    <FlatList
+                        data={allies}
+                        renderItem={({ item, index }) => (
+                            <AlliesItem 
+                                item={item}
+                                onAddParticipant={() => onAddParticipantHandler(index)}
+                                onDeleteParticipant={(participant) => onDeleteParticipantHandler(participant,index)}
+                                onDeleteGroup={() => {onDeleteGroupHandler(index)}}
+                            />
+                        )}
+                    />
                 </View>
-            </View>
-            <Header title='Set Allies' editMode={true}/>
-            <AlliesModal 
-                onSelect={onSelectHandler}
-                onRequestClose={()=> setModal({isVisible:false, alliesIndex:null})}
-                setting={modal}
-                items={items}
-            />
+                <View style={{alignItems:'center', paddingVertical:15, borderTopColor:'#ccc', borderTopWidth:1}}>
+                    <SMButton title='Add New Group' onPress={onAddNewGroupHandler} />
+                </View>
+                <Header title='Set Allies' onClose={() => navigation.goBack()} />
+                <AlliesModal 
+                    onSelect={onSelectHandler}
+                    onRequestClose={()=> setModal({isVisible:false, alliesIndex:null})}
+                    setting={modal}
+                    items={items}
+                />
+            </ErrorBoundary>
         </View>
     );
 }
@@ -128,8 +154,3 @@ const styles = StyleSheet.create({
     },
 });
 
-const pickerSelectStyles = StyleSheet.create({
-    inputAndroid: {
-        color: 'black',
-    },
-});

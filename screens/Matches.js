@@ -106,7 +106,7 @@ function Matches({navigation}) {
         }
       }
       BackHandler.addEventListener("hardwareBackPress", onBackPress);
-      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);;
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
 
     }, [isCreate, isShowCheckBox, resetMark])
   );
@@ -114,7 +114,7 @@ function Matches({navigation}) {
   return (
       <View style={styles.container}>
         <ErrorBoundary>
-          <Header title='Matches'/>
+          <Header title='Matches' onClose={() => navigation.goBack()} />
           <View style={styles.innerContainer}>
             <View style={styles.filterContainer}>
               <View style={{flexDirection:'row', alignItems:'center'}}>

@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, TouchableNativeFeedback } from 'react-native'
 import { margins, } from '../../utils/stylesheets/spacing';
 import { Ionicons } from '@expo/vector-icons';
 import SMButton from '../../components/custom/SMButton';
+import { AntDesign } from '@expo/vector-icons';
 
-export default function AlliesItem({item, onAddParticipant, onDeleteParticipant}) {
+export default function AlliesItem({item, onAddParticipant, onDeleteParticipant, onDeleteGroup}) {
 
     const onAddParticipantHandler = () => {
         onAddParticipant(item);
@@ -13,19 +14,28 @@ export default function AlliesItem({item, onAddParticipant, onDeleteParticipant}
     return (
         <View style={[styles.card, margins.my1]}>
             <View style={[styles.cardHeader,margins.my2]}>
-                <Text style={styles.cardTitleText}>Allies 1</Text>
+                <Text style={styles.cardTitleText} numberOfLines={1}>
+                    {item.groupName}
+                </Text>
+                <TouchableNativeFeedback
+                    onPress={onDeleteGroup}
+                    background={TouchableNativeFeedback.SelectableBackground()} 
+                >
+                    <View style={{position:'absolute', borderWidth:1, height:30, width: 30, borderRadius:5, borderColor:'#d4d4d4', right:-10, top:-15, alignItems:'center', justifyContent:'center'}}>
+                        <AntDesign name="close" size={20} color="#A36023" />
+                    </View>
+                </TouchableNativeFeedback>
             </View>
             <View style={styles.cardBody}>
                 <View style={[styles.pickerContainer, margins.mt1]}>
                     { item.participants.map((item, index) => (
-                        <View style={{paddingHorizontal:15,paddingVertical:10, flexDirection:'row',alignItems:'center'}}
+                        <View style={styles.itemContainer}
                             key={item.key}
                         >    
                             <View style={{flex:1}}>
-                                <Text 
-                                    style={{fontSize:15}}
-                                    numberOfLines={1}
-                                >{item.name}</Text>
+                                <Text style={{fontSize:15}} numberOfLines={1}>
+                                    {item.name}
+                                </Text>
                             </View>
                             <TouchableNativeFeedback
                                 onPress={() => onDeleteParticipant(item)}
@@ -59,11 +69,15 @@ const styles = StyleSheet.create({
         fontSize:15,
         fontWeight:'bold',
     },
-    pickerContainer: {
-        borderColor:'#d4d4d4',
-        borderWidth:1,
-        borderRadius:5,
-        
+    itemContainer: {
+        paddingHorizontal:15,
+        paddingVertical:10,
+        flexDirection:'row',
+        alignItems:'center',
+        borderTopColor:'#ccc',
+        borderBottomColor:'#ccc',
+        borderTopWidth:0.5,
+        borderBottomWidth:0.5,
     },
     cardBody: {
         
