@@ -22,6 +22,7 @@ export const addNotMatchObj = (notMatch, {match}) => {
         const participant = {
             key: match[0].parentKey,
             name: match[0].participantName,
+            alliesKey: match[0].alliesKey,
             spiders:[{...match[0]}],
         };
         newNotMatch.push(participant);
@@ -31,6 +32,7 @@ export const addNotMatchObj = (notMatch, {match}) => {
         const participant = {
             key: match[1].parentKey,
             name: match[1].participantName,
+            alliesKey: match[1].alliesKey,
             spiders:[{...match[1]}],
         };
         newNotMatch.push(participant);

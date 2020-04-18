@@ -45,7 +45,7 @@ const matchReducer = (state = [], action)  => {
 
 const notMatchReducer = (state = initialState, action) => {
     switch(action.type) {
-        case 'ADD_NOT_MATCH':
+        case ADD:
             return [...state, action.participant];
         case 'DELETE_NOT_MATCH':
             return state.filter((item) => item.key !== action.key);
