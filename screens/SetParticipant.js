@@ -12,7 +12,7 @@ export default function SetParticipant({route, navigation}) {
     const dispatch = useDispatch();
     
     const participant = route.params?.participant ? 
-        route.params.participant : { key:Date.now().toString(), name:'', spiders: [] }
+        route.params.participant : { key:Date.now().toString(), name:'', alliesKey: null, spiders: [] }
 
     const [name, setName] = useState(participant.name);
     const [spiders, setSpiders] = useState(participant.spiders);

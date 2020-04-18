@@ -25,7 +25,7 @@ export default function Allies({navigation, route}) {
     },[]);
 
     useEffect(() => {
-        const newItems = updateItems(participants)
+        const newItems = updateItems(participants);
         setItems(newItems);
     }, [participants]);
 

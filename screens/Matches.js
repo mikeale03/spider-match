@@ -48,6 +48,7 @@ function Matches({navigation}) {
 
   const autoMatch = () => {
     const result = getSingleMatchWithLeastDif(notMatch);
+    console.log(result);
     if(result.match !== null) {
       dispatch(updateMatches([result.match, ...matches]));
       dispatch(updateNotMatch(result.notMatch));
