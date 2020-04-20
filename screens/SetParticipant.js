@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
 import { useDispatch } from "react-redux";
 import { addParticipant, updateParticipant, addNotMatch } from '../redux/actions';
 import Header from '../components/custom/Header';
@@ -41,19 +41,47 @@ export default function SetParticipant({route, navigation}) {
     }
 
     const setParticipant = () => {
-        let newSpiders = spiders.map( (item) => ({...item,participantName:name}) );
-        newSpiders.sort((a,b) => a.weight - b.weight );
-        const newParticipant = { ...participant, name, spiders:newSpiders };
-        
-        if(route.params) {
-            dispatch(updateParticipant(newParticipant));
+        const length = spiders.length;
+        let missingWeight = false;
+        for(let i=0; i<length;i++) {
+            if(!spiders[i].weight) {
+                missingWeight = true;
+                break;
+            }
         }
-        else {
-            dispatch(addParticipant(newParticipant));
-            dispatch(addNotMatch(newParticipant));
-        }
+        if(length === 0) {
+            Alert.alert(
+                'Missing field!',
+                "Participant's spiders is required.",
+                [
+                  {text: 'OK', onPress: () => console.log('OK Pressed')},
+                ],
+                {cancelable: false},
+              );
+        } else if(missingWeight) {
+            Alert.alert(
+                'Missing field!',
+                "Spider's weight is required.",
+                [
+                  {text: 'OK', onPress: () => console.log('OK Pressed')},
+                ],
+                {cancelable: false},
+              );
+        } else {
+            let newSpiders = spiders.map( (item) => ({...item,participantName:name}) );
+            newSpiders.sort((a,b) => a.weight - b.weight );
+            const newParticipant = { ...participant, name, spiders:newSpiders };
+            
+            if(route.params) {
+                dispatch(updateParticipant(newParticipant));
+            }
+            else {
+                dispatch(addParticipant(newParticipant));
+                dispatch(addNotMatch(newParticipant));
+            }
 
-        navigation.goBack();
+            navigation.goBack();
+        }
     }
 
     const onCloseHandler= () => {
@@ -73,7 +101,7 @@ export default function SetParticipant({route, navigation}) {
                                 value={name}
                                 onChangeText={setName}
                                 autoFocus={true}
-                                />
+                            />
                         </View>
                         <KeyboardAvoidingView behavior="margin" enabled>
                             <Spiders spiders={spiders} 

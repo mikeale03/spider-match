@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList,} from 'react-native';
+import { View, StyleSheet, FlatList, AsyncStorage } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import SMButton from '../components/custom/SMButton';
 import Header from '../components/custom/Header';
@@ -16,6 +16,7 @@ export default function Allies({navigation, route}) {
     const [modal, setModal] = useState({isVisible:false, alliesIndex:null,});
     const participants = useSelector( state => state.participants );
     const allies = useSelector( state => state.allies );
+    const fetchingDone = useSelector( state => state.fetchingDone );
     const dispatch = useDispatch();
     
     useEffect(() => {
@@ -28,6 +29,19 @@ export default function Allies({navigation, route}) {
         const newItems = updateItems(participants);
         setItems(newItems);
     }, [participants]);
+
+    const setData = async () => {
+        try{
+            await AsyncStorage.setItem('allies', JSON.stringify(allies));
+            console.log(allies)
+        } catch(e) {
+            alert(e);
+        }
+    }
+
+    useEffect(() => {
+        fetchingDone && setData();
+    },[allies]);
 
     const updateItems = (newParticipants) => {
         const newItems = newParticipants.reduce((acc, item) => {
@@ -56,6 +70,7 @@ export default function Allies({navigation, route}) {
         newAllies[alliesIndex].participants.push(participant);
         const newParticipants = updateParticipantsAlliesKey(participant, alliesKey);
         dispatch(updateParticipants(newParticipants));
+        dispatch(updateAllies(newAllies));
         setModal({
             isVisible:false,
             alliesIndex:null,

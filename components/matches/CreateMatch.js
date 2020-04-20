@@ -13,7 +13,13 @@ export default function CreateMatch({notMatch, onCancel, onDone}) {
 
     const onSelectParticipant1Handler = (value) => {
         if(value) {
-            const newItems = items.filter((item) => (value.key !== item.key && value.alliesKey !== item.value.alliesKey));
+            const newItems = items.filter((item) => {
+                if (value.key === item.key) 
+                    return false;
+                else if (value.alliesKey !== null && item.value.alliesKey !== null)
+                    return value.alliesKey === item.value.alliesKey ? false : true;
+                else return true;
+            });
             setParticipant2Items(newItems);
         } else 
         setParticipant2Items(items);
@@ -21,7 +27,13 @@ export default function CreateMatch({notMatch, onCancel, onDone}) {
 
     const onSelectParticipant2Handler = (value) => {
         if(value) {
-            const newItems = items.filter((item) => (value.key !== item.key && value.alliesKey !== item.value.alliesKey));
+            const newItems = items.filter((item) => {
+                if (value.key === item.key) 
+                    return false;
+                else if (value.alliesKey !== null && item.value.alliesKey !== null)
+                    return value.alliesKey === item.value.alliesKey ? false : true;
+                else return true;
+            });
             setParticipant1Items(newItems);
         } else 
         setParticipant1Items(items);

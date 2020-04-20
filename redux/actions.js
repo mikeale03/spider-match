@@ -7,6 +7,11 @@ const ADD_NOT_MATCH = 'ADD_NOT_MATCH';
 const UPDATE_NOT_MATCH = 'UPDATE_NOT_MATCH';
 const UPDATE_MATCHES = 'UPDATE_MATCHES';
 
+export const initParticipants = (participants) => ({
+    type: 'INIT_PARTICIPANTS',
+    participants,
+});
+
 export const addParticipant = (participant) => ({
     type: ADD,
     participant
@@ -45,4 +50,9 @@ export const updateMatches = (matches) => ({
 export const updateAllies = (allies) => ({
     type: 'UPDATE_ALLIES',
     allies,
+});
+
+export const updateFetching = (fetchingDone) => ({
+    type: 'UPDATE_FETCHING',
+    fetchingDone,
 });

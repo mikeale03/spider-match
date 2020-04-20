@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Text, Switch , TouchableNativeFeedback} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import SMTextInput from '../custom/SMTextInput';
+import SMButton from '../custom/SMButton';
 import { margins } from '../../utils/stylesheets/spacing';
 import SMImage from '../custom/SMImage';
 
@@ -49,14 +50,14 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
                         <SMImage shape='square' size={70} />
                     </View>
                     <View style={styles.listInputContainer}>
-                        <View style={[styles.listInputWrapper, margins.mb1]}>
+                        <View style={[styles.listInputWrapper, margins.mb1,]}>
                             <SMTextInput
                                 size='sm'
                                 placeholder='Enter weight' 
                                 value={item.weight ? item.weight.toString() : null}
                                 keyboardType='numeric'
                                 onChangeText={(val) => setWeightHandler(val, index)}
-                                blurOnSubmit={false}
+                                style={!item.weight && {borderColor:'red'}}
                             />
                         </View>
                         <View style={styles.listInputWrapper}>
@@ -79,12 +80,11 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
                     </TouchableNativeFeedback>
                 </View>
             ))}
+
+            <View style={{alignItems:'center', padding:15}}>
+                <SMButton title='Add spider' onPress={addSpiderHandler}/>
+            </View>
             
-            <TouchableNativeFeedback onPress={addSpiderHandler}>
-                <View style={{alignItems:'center'}}>
-                    <Text>Add</Text>
-                </View>
-            </TouchableNativeFeedback>
         </View>
     ); 
 };
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     title: {
         justifyContent:'center',
         alignItems:'center',
-        padding: 10,
+        padding: 15,
         marginHorizontal:5,
 
     },

@@ -196,9 +196,9 @@ export const getMatch = (participant1, participant2, targetDif=0) => {
   let spiders1 = [...participant1.spiders];
   let spiders2 = [...participant2.spiders];
 
-  if(spiders2.length) {
-    let ind = 1;
-    spiders1 = spiders1.filter((item) => {
+  let ind = 1;
+  spiders1 = spiders1.filter((item) => {
+    if(spiders2.length) {
       let result = findMinDif(spiders2, item.weight, ind);
       ind = result.index;
       if(result.dif === targetDif && match === null ) {
@@ -217,8 +217,8 @@ export const getMatch = (participant1, participant2, targetDif=0) => {
         nxtMinDif = result.dif < nxtMinDif ? result.dif : nxtMinDif; 
         return true;
       }
-    });
-  }
+    } else return true;
+  });
 
   const p1 = {...participant1, spiders:spiders1};
   const p2 = {...participant2, spiders:spiders2}

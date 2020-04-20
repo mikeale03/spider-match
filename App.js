@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack'
 import TabScreen from './screens/TabScreen';
 import SetParticipant from './screens/SetParticipant';
-import Matches from './screens/Matches';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './redux/reducers';
@@ -15,6 +14,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 export default function App() {
+
   return (
     <Provider store={store}>
       <NavigationContainer>
@@ -42,13 +42,3 @@ export default function App() {
     </Provider>
   );
 }
-
-//<Tab.Navigator tabBarOptions={{keyboardHidesTabBar:true}} >
-//  <Tab.Screen name="ParticipantsRoot" component={Participants} 
-//    options={ ({route}) => {
-//     return route.state?.routes?.length > 1 ? {tabBarVisible:false} : {tabBarVisible:true}
-//      }
-//    }
-//   />
-//  <Tab.Screen name="Matches" component={Matches} />
-//</Tab.Navigator>

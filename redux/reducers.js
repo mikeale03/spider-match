@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import {participants, allies} from '../components/TempData';
+//import {participants, allies} from '../components/TempData';
 
 const ADD = 'ADD';
 const UPDATE_PARTICIPANT = 'UPDATE_PARTICIPANT';
@@ -8,7 +8,7 @@ const DELETE_INDEX = 'DELETE_INDEX';
 const DELETE_KEY = 'DELETE_KEY';
 const DELETE_CHECK = 'DELETE_CHECK';
 
-const initialState = participants;
+const initialState = /*participants*/[];
 
 const participantsReducer = (state = initialState, action) => {
     switch(action.type) {
@@ -28,6 +28,8 @@ const participantsReducer = (state = initialState, action) => {
                     action.participant : item;
             });
         case 'UPDATE_PARTICIPANTS':
+            return action.participants;
+        case 'INIT_PARTICIPANTS':
             return action.participants;
         default:
             return state;
@@ -65,10 +67,19 @@ const notMatchReducer = (state = initialState, action) => {
     }
 }
 
-const alliesReducer = (state = allies, action) => {
+const alliesReducer = (state = []/*allies*/, action) => {
     switch(action.type) {
         case 'UPDATE_ALLIES':
             return action.allies;
+        default:
+            return state;
+    }
+}
+
+const fetchingDoneReducer = (state = false, action) => {
+    switch(action.type) {
+        case 'UPDATE_FETCHING':
+            return action.fetchingDone;
         default:
             return state;
     }
@@ -79,4 +90,5 @@ export default combineReducers({
     matches: matchReducer,
     notMatch: notMatchReducer,
     allies: alliesReducer,
+    fetchingDone: fetchingDoneReducer,
 })

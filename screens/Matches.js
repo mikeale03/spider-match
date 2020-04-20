@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Picker, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, Picker, BackHandler, AsyncStorage } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Header from '../components/custom/Header';
 import CreateMatch from '../components/matches/CreateMatch';
@@ -22,6 +22,7 @@ function Matches({navigation}) {
   let matches = useSelector((state) => state.matches);
   const [isCreate, setIsCreate] = useState(false);
   const [isShowCheckBox, setIsShowCheckBox] = useState(false);
+  const fetchingDone = useSelector( state => state.fetchingDone );
   
   const onDoneHandler = (match) => {
     const newMatch = {
@@ -93,6 +94,19 @@ function Matches({navigation}) {
       headerShown: false
     });
   }, []);
+
+  const setData = async () => {
+    try{
+      await AsyncStorage.setItem('matches', JSON.stringify(matches));
+      await AsyncStorage.setItem('notMatch', JSON.stringify(notMatch));
+    } catch(e) {
+      alert(e);
+    }
+  }
+
+  useEffect(() => {
+    fetchingDone && setData();
+  },[matches,notMatch]);
 
   useFocusEffect(
     React.useCallback(() => {

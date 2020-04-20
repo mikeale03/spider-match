@@ -3,6 +3,7 @@ import { TextInput } from 'react-native';
 
 const SMTextInput = ({
     size,
+    style,
     ...rest
 }) => {
 
@@ -15,14 +16,14 @@ const SMTextInput = ({
     return (
         <TextInput
         {...rest}
-        style={{
+        style={[{
             height: inputSize,
             borderColor:'gray',
             borderWidth:1,
             flex:1,
             borderRadius:10,
             paddingHorizontal:10
-        }}
+        },style]}
         />
     )
 }
