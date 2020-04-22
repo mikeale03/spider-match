@@ -31,6 +31,24 @@ const participantsReducer = (state = initialState, action) => {
             return action.participants;
         case 'INIT_PARTICIPANTS':
             return action.participants;
+        case 'UPDATE_SCORE':
+            newState = [...state];
+            if(action.result.prev === null || action.result.prev === 'Draw') {}               
+            else {
+                newState = newState.map((item) => {
+                    return item.key === action.result.prev.parentKey ? 
+                        {...item, score: item.score - 1} : item;
+                });
+            }
+            if(action.result.next === null || action.result.next === 'Draw') {} 
+            else {
+                newState = newState.map((item) => {
+                    return item.key === action.result.next.parentKey ? 
+                        {...item, score: item.score + 1} : item;
+                });
+            }
+            console.log(newState);
+            return newState;
         default:
             return state;
     }
@@ -40,6 +58,8 @@ const matchReducer = (state = [], action)  => {
     switch(action.type) {
         case 'UPDATE_MATCHES':
             return action.matches;
+        case 'UPDATE_MATCH':
+            return state.map((item) => item.key === action.match.key ? action.match : item);
         default:
             return state;
     }

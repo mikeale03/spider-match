@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Picker, BackHandler, AsyncStorage } from 'react-native';
+import { View, Text, StyleSheet, Picker, CheckBox, BackHandler, AsyncStorage } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Header from '../components/custom/Header';
 import CreateMatch from '../components/matches/CreateMatch';
@@ -49,7 +49,6 @@ function Matches({navigation}) {
 
   const autoMatch = () => {
     const result = getSingleMatchWithLeastDif(notMatch);
-    console.log(result);
     if(result.match !== null) {
       dispatch(updateMatches([result.match, ...matches]));
       dispatch(updateNotMatch(result.notMatch));
@@ -184,11 +183,23 @@ function Matches({navigation}) {
             <FlatList
               data={matches}
               renderItem={({ item }) => (
-                <MatchItem 
-                  item={item}
-                  onMark={onMark}
-                  onLongPress={matchItemLongPressHandler}
-                  showCheckBox={isShowCheckBox}/>
+                <View style={{flexDirection:'row'}}>
+                  <MatchItem 
+                    item={item}
+                    onMark={onMark}
+                    onLongPress={matchItemLongPressHandler}
+                    onPress={() => navigation.navigate('Match', {matchItem:item})}
+                    //showCheckBox={isShowCheckBox}
+                  />
+                  { isShowCheckBox && (
+                    <View style={styles.checkBoxContainer}>
+                        <CheckBox 
+                            value={item.isMarked}
+                            onValueChange={() => onMark(item)}
+                        />
+                    </View>
+                  )}
+                </View>
               )}
             />
 
@@ -238,5 +249,9 @@ const styles = StyleSheet.create({
   onCheckButtonsContainer: {
     flexDirection:'row',
     alignItems:'center',
+  },
+  checkBoxContainer: {
+    justifyContent:'center',
+    alignItems:'center'
   }
 });

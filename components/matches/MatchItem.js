@@ -1,18 +1,20 @@
 import React from 'react'
 import { View, StyleSheet, Text, CheckBox, TouchableNativeFeedback } from 'react-native'
 
-export default function MatchItem({item, onMark, onLongPress, showCheckBox}) {
+export default function MatchItem({item, onLongPress, onPress}) {
 
-    const onMarkHandler = () => {
-        onMark(item);
-    }
     const onLongPressHandler = () => {
         onLongPress(item);
+    }
+
+    const onPressHandler = () => {
+        onPress(item);
     }
 
     return (
         <TouchableNativeFeedback
                 onLongPress={onLongPressHandler}
+                onPress={onPressHandler}
         >
             <View style={styles.matchContainer}>
                 <View style={styles.spiderContainer}>
@@ -36,14 +38,6 @@ export default function MatchItem({item, onMark, onLongPress, showCheckBox}) {
                         <Text>Wt: {item.match[1].weight.toString()}</Text>
                     </View>
                 </View>
-                { showCheckBox && (
-                        <View style={styles.checkBoxContainer}>
-                            <CheckBox 
-                                value={item.isMarked}
-                                onValueChange={onMarkHandler}
-                            />
-                        </View>
-                )}
             </View>
         </TouchableNativeFeedback>
     );
@@ -54,6 +48,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         borderBottomColor: '#ccc',
         borderBottomWidth: .75,
+        flex:1,
     },
     spiderContainer: {
         flex:5,

@@ -10,16 +10,16 @@ import SMImage from '../components/custom/SMImage';
 
 export default function SetParticipant({route, navigation}) {
     const dispatch = useDispatch();
-    
-    const participant = route.params?.participant ? 
-        route.params.participant : { key:Date.now().toString(), name:'', alliesKey: null, spiders: [] }
-
-    const [name, setName] = useState(participant.name);
-    const [spiders, setSpiders] = useState(participant.spiders);
+    const [participant, setParticipant] = useState({});
+    const [name, setName] = useState('');
+    const [spiders, setSpiders] = useState([]);
 
     useEffect(() => {
-        setName(participant.name);
-        setSpiders(participant.spiders);
+        const p = route.params?.participant ? 
+            route.params.participant : { key:Date.now().toString(), name:'', alliesKey: null, score:0, spiders: [] }
+        setParticipant(p);
+        setName(p.name);
+        setSpiders(p.spiders);
     }, [route.params]); 
 
     const onEditSpider = (spider) => {
@@ -40,7 +40,7 @@ export default function SetParticipant({route, navigation}) {
         ));
     }
 
-    const setParticipant = () => {
+    const submitParticipant = () => {
         const length = spiders.length;
         let missingWeight = false;
         for(let i=0; i<length;i++) {
@@ -113,7 +113,7 @@ export default function SetParticipant({route, navigation}) {
                 </ScrollView>
             </ErrorBoundary>
             <Header title="Set Participant" editMode="true"
-                onDone={setParticipant} onClose={onCloseHandler}/>
+                onDone={submitParticipant} onClose={onCloseHandler}/>
         </View>
     );
 }

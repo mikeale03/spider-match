@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack'
 import TabScreen from './screens/TabScreen';
 import SetParticipant from './screens/SetParticipant';
+import Match from './screens/Match';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './redux/reducers';
@@ -33,6 +34,11 @@ export default function App() {
             }}
           />
           <Stack.Screen name='SetParticipant' component={SetParticipant} 
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen name='Match' component={Match} 
             options={{
               headerShown: false,
             }}

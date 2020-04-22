@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, AsyncStorage } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import SMButton from '../components/custom/SMButton';
 import Header from '../components/custom/Header';
 import AlliesItem from '../components/allies/AlliesItem';
@@ -33,7 +32,6 @@ export default function Allies({navigation, route}) {
     const setData = async () => {
         try{
             await AsyncStorage.setItem('allies', JSON.stringify(allies));
-            console.log(allies)
         } catch(e) {
             alert(e);
         }
