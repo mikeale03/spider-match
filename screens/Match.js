@@ -10,6 +10,14 @@ export default function Match({route}) {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const onResultSelectHandler = (value) => {
+
+        if(value !== 'Draw')
+            value = {
+                spiderKey:value.key,
+                participantKey:value.parentKey,
+                participantName:value.participantName,
+            }
+
         const res = {prev:result, next:value};
         dispatch({
              type:'UPDATE_SCORE',

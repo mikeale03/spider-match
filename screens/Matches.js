@@ -18,8 +18,8 @@ import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
 function Matches({navigation}) {
   
   const dispatch = useDispatch();
-  let notMatch = useSelector((state) => state.notMatch);
-  let matches = useSelector((state) => state.matches);
+  const notMatch = useSelector((state) => state.notMatch);
+  const matches = useSelector((state) => state.matches);
   const [isCreate, setIsCreate] = useState(false);
   const [isShowCheckBox, setIsShowCheckBox] = useState(false);
   const fetchingDone = useSelector( state => state.fetchingDone );
@@ -79,6 +79,10 @@ function Matches({navigation}) {
     const {newMatches, markedItem} = MatchesUpdater.deleteMarked(matches);
     const newNotMatch = addNotMatchArr(notMatch, markedItem);
     setIsShowCheckBox(false);
+    dispatch({
+      type:'REVERT_SCORES',
+      matches:markedItem,
+    })
     dispatch(updateMatches(newMatches));
     dispatch(updateNotMatch(newNotMatch));
   }
@@ -94,16 +98,15 @@ function Matches({navigation}) {
     });
   }, []);
 
-  const setData = async () => {
-    try{
-      await AsyncStorage.setItem('matches', JSON.stringify(matches));
-      await AsyncStorage.setItem('notMatch', JSON.stringify(notMatch));
-    } catch(e) {
-      alert(e);
-    }
-  }
-
   useEffect(() => {
+    const setData = async () => {
+      try{
+        await AsyncStorage.setItem('matches', JSON.stringify(matches));
+        await AsyncStorage.setItem('notMatch', JSON.stringify(notMatch));
+      } catch(e) {
+        alert(e);
+      }
+    }
     fetchingDone && setData();
   },[matches,notMatch]);
 

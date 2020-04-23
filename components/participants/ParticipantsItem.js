@@ -36,7 +36,7 @@ function Item({participant}) {
                 </TouchableNativeFeedback>
 
                     <View style={{flex:2, alignItems:'center', justifyContent:'center', flexDirection:'row'}}>  
-                        <Text>{1}</Text>
+                        <Text>{participant.score}</Text>
                         <TouchableNativeFeedback
                             onPress={deleteHandler}
                             background={TouchableNativeFeedback.SelectableBackground()} 
