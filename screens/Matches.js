@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Picker, CheckBox, BackHandler, AsyncStorage } from 'react-native';
+import { View, Text, StyleSheet, Picker, CheckBox, BackHandler, } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Header from '../components/custom/Header';
 import CreateMatch from '../components/matches/CreateMatch';
@@ -99,15 +99,7 @@ function Matches({navigation}) {
   }, []);
 
   useEffect(() => {
-    const setData = async () => {
-      try{
-        await AsyncStorage.setItem('matches', JSON.stringify(matches));
-        await AsyncStorage.setItem('notMatch', JSON.stringify(notMatch));
-      } catch(e) {
-        alert(e);
-      }
-    }
-    fetchingDone && setData();
+    
   },[matches,notMatch]);
 
   useFocusEffect(

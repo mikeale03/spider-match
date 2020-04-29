@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, AsyncStorage } from 'react-native';
+import { View, StyleSheet, FlatList, } from 'react-native';
 import SMButton from '../components/custom/SMButton';
 import Header from '../components/custom/Header';
 import AlliesItem from '../components/allies/AlliesItem';
@@ -29,16 +29,9 @@ export default function Allies({navigation, route}) {
         setItems(newItems);
     }, [participants]);
 
-    const setData = async () => {
-        try{
-            await AsyncStorage.setItem('allies', JSON.stringify(allies));
-        } catch(e) {
-            alert(e);
-        }
-    }
 
     useEffect(() => {
-        fetchingDone && setData();
+        
     },[allies]);
 
     const updateItems = (newParticipants) => {

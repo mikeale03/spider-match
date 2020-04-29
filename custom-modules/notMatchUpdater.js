@@ -66,3 +66,25 @@ export const removeNotMatch = (notMatch, match) => {
       
     return newNotMatch;
 }
+
+export const generateNotMatch = (participants, matches) => {
+    
+    return participants.reduce((acc, participant) => {
+        let spiders = participant.spiders;
+        const l = matches.length;
+        spiders = spiders.filter((spider) => {
+            for(let i = 0; i<l; i++) {
+                if(matches[i].match[0].key === spider.key) {
+                    return false;
+                } else if(matches[i].match[1].key === spider.key) {
+                    return false;
+                } 
+            }
+            return true;
+        });
+        if(spiders.length) {
+            acc.push({...participant, spiders});
+        }
+        return acc;
+    },[])
+}
