@@ -9,7 +9,8 @@ import { updateAllies, updateMatches, updateNotMatch, initParticipants, updateFe
 function Participants({navigation}) {
 
     const [isDoneFetching, setIsDoneFetching] = useState(false)
-    const participants = useSelector( (state) => state.participants );
+    const [sortBy, setSortBy] = useState('name');
+    let participants = useSelector( (state) => state.participants );
     const dispatch = useDispatch();
 
     const addHandler = () => {
@@ -19,8 +20,13 @@ function Participants({navigation}) {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const res = await DB.createParticipantsTable();
-          console.log(res);
+          await DB.createParticipantsTable();
+          console.log('created');
+          const {_array} = await DB.getAllParticipants();
+          const p = _array.map((item) => ({
+            ...item, score:Number(item.score), spiders:JSON.parse(item.spiders)
+          }));
+          console.log(p);
         } catch (error) {
           console.log(error);
         }
@@ -29,8 +35,20 @@ function Participants({navigation}) {
     }, []);
 
     useEffect(() => {
-      
-    },[participants]);
+      participants = participants.map((item) => {
+        const spiders = item.spiders.map((spider) => ({...spider}));
+        return {...item, spiders};
+      });
+      participants.sort((a, b) => {
+        if(a.name.toLowerCase() < b.name.toLowerCase())
+          return -1;
+        else if (a.name.toLowerCase() > b.name.toLowerCase())
+          return 1;
+        else
+          return 0;
+      });
+      //console.log(participants);
+    },[sortBy]);
 
     return (
         <View style={styles.container}>

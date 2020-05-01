@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
 import { useDispatch } from "react-redux";
 import { addParticipant, updateParticipant, addNotMatch } from '../redux/actions';
+import * as DB from "../custom-modules/database";
 import Header from '../components/custom/Header';
 import Spiders from '../components/set-participant/SetSpiders';
 import ErrorBoundary from  '../components/error-catch/ErrorBoundary';
 import SMTextInput from '../components/custom/SMTextInput';
 import SMImage from '../components/custom/SMImage';
+import { participants } from '../components/TempData';
 
 export default function SetParticipant({route, navigation}) {
     const dispatch = useDispatch();
@@ -16,7 +18,7 @@ export default function SetParticipant({route, navigation}) {
 
     useEffect(() => {
         const p = route.params?.participant ? 
-            route.params.participant : { key:Date.now().toString(), name:'', alliesKey: null, score:0, spiders: [] }
+            route.params.participant : { key:Date.now().toString(), name:'', image:'', alliesKey: null, score:0, spiders: [] }
         setParticipant(p);
         setName(p.name);
         setSpiders(p.spiders);
@@ -38,6 +40,20 @@ export default function SetParticipant({route, navigation}) {
         setSpiders(spiders.filter((item) => 
             item.key !== spider.key 
         ));
+    }
+
+    const insertParticipant = async (participant) => {
+        const spiders = JSON.stringify(participant.spiders);
+        const participantData = {...participant, spiders};
+        try {
+            const res = await DB.insertIntoTable('participants', participantData);
+            dispatch(addParticipant(participant));
+            console.log(res);
+            //dispatch(addNotMatch(newParticipant));
+            
+        } catch(error) {
+            console.log(error);
+        }
     }
 
     const submitParticipant = () => {
@@ -76,8 +92,7 @@ export default function SetParticipant({route, navigation}) {
                 dispatch(updateParticipant(newParticipant));
             }
             else {
-                dispatch(addParticipant(newParticipant));
-                dispatch(addNotMatch(newParticipant));
+                insertParticipant(newParticipant);
             }
 
             navigation.goBack();
