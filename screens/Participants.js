@@ -4,11 +4,11 @@ import * as DB from '../custom-modules/database';
 import List from '../components/participants/ParticipantsList';
 import Header from '../components/custom/Header';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateAllies, updateMatches, updateNotMatch, initParticipants, updateFetching } from '../redux/actions';
+import * as actions from '../redux/actions';
+
 
 function Participants({navigation}) {
 
-    const [isDoneFetching, setIsDoneFetching] = useState(false)
     const [sortBy, setSortBy] = useState('name');
     let participants = useSelector( (state) => state.participants );
     const dispatch = useDispatch();
@@ -18,20 +18,7 @@ function Participants({navigation}) {
     }
 
     useEffect(() => {
-      const fetchData = async () => {
-        try {
-          await DB.createParticipantsTable();
-          console.log('created');
-          const {_array} = await DB.getAllParticipants();
-          const p = _array.map((item) => ({
-            ...item, score:Number(item.score), spiders:JSON.parse(item.spiders)
-          }));
-          console.log(p);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      fetchData();
+      
     }, []);
 
     useEffect(() => {
@@ -47,7 +34,6 @@ function Participants({navigation}) {
         else
           return 0;
       });
-      //console.log(participants);
     },[sortBy]);
 
     return (

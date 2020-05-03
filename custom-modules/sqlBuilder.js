@@ -18,21 +18,8 @@ export const createMatchesTable = () => {
             "key"	TEXT NOT NULL UNIQUE,
             "result"	TEXT,
             "spiders"	TEXT NOT NULL,
+            "isMarked" INTEGER NOT NULL,
             PRIMARY KEY("key")
-        );`
-    );
-}
-
-export const createSpidersTable = () => {
-    return (
-        `CREATE TABLE IF NOT EXISTS spiders (
-            spiderKey TEXT PRIMARY KEY NOT NULL UNIQUE,
-            weight NUMERIC NOT NULL,
-            otherDetails TEXT,
-            spiderImage TEXT,
-            isJoker	INTEGER,
-            parentKey TEXT NOT NULL,
-            FOREIGN KEY("parentKey") REFERENCES "participants"("key") ON DELETE CASCADE
         );`
     );
 }
@@ -50,7 +37,13 @@ export const createAlliesTable = () => {
 export const selectAllParticipants = () => {
     return (
         'SELECT * from participants;'
-    )
+    );
+}
+
+export const selectAllFromTable = (table) => {
+    return (
+        `SELECT * from ${table};`
+    );
 }
 
 export const insertIntoTable = (table, columns) => {
@@ -59,6 +52,12 @@ export const insertIntoTable = (table, columns) => {
     return `INSERT INTO ${table} (${columns}) values (${values})`;
 }
 
-// console.log(insertIntoTable(
-//     'participants', ['name', 'score', 'image']
-// ))
+export const updateTable = (table, columns, where) => {
+    columns = columns.map((item) => item +' = ?');
+    columns = columns.join(', ');
+    return `UPDATE ${table} SET ${columns} WHERE ${where}`;
+}
+
+export const deleteFromTable = (table, where) => {
+    return `DELETE FROM ${table} where ${where};`
+}

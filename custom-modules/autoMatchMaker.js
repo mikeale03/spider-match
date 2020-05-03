@@ -60,7 +60,8 @@ export const getMatches = (participant1, participant2, targetDif=0) => {
         matches.push({
           key:Date.now().toString()+(ctr++),
           isMarked:false,
-          match: [
+          result:null,
+          spiders: [
             {...item, alliesKey:participant1.alliesKey},
             {...spiders2[result.index], alliesKey:participant2.alliesKey},
           ] 
@@ -205,7 +206,9 @@ export const getMatch = (participant1, participant2, targetDif=0) => {
 
         match = {
           key:Date.now().toString()+(ctr++),
-          match: [
+          isMarked:false,
+          result:null,
+          spiders: [
             {...item, alliesKey:participant1.alliesKey},
             {...spiders2[result.index], alliesKey:participant2.alliesKey},
           ] 

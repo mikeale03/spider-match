@@ -19,10 +19,10 @@ export default function MatchItem({item, onLongPress, onPress}) {
             <View style={styles.matchContainer}>
                 <View style={styles.spiderContainer}>
                     <View>
-                        <Text style={styles.participantNameText}>{item.match[0].participantName}</Text>
+                        <Text style={styles.participantNameText}>{item.spiders[0].participantName}</Text>
                     </View>
                     <View>
-                        <Text>Wt: {item.match[0].weight.toString()}</Text>
+                        <Text>Wt: {item.spiders[0].weight.toString()}</Text>
                     </View>
                 </View>
 
@@ -32,10 +32,10 @@ export default function MatchItem({item, onLongPress, onPress}) {
 
                 <View style={styles.spiderContainer}>
                     <View>
-                        <Text style={styles.participantNameText}>{item.match[1].participantName}</Text>
+                        <Text style={styles.participantNameText}>{item.spiders[1].participantName}</Text>
                     </View>
                     <View>
-                        <Text>Wt: {item.match[1].weight.toString()}</Text>
+                        <Text>Wt: {item.spiders[1].weight.toString()}</Text>
                     </View>
                 </View>
             </View>

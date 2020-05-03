@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
 import { useDispatch } from "react-redux";
-import { addParticipant, updateParticipant, addNotMatch } from '../redux/actions';
+import * as actions /*{ actions.addParticipant, updateParticipant, addNotMatch }*/ from '../redux/actions';
 import * as DB from "../custom-modules/database";
 import Header from '../components/custom/Header';
 import Spiders from '../components/set-participant/SetSpiders';
@@ -42,15 +42,27 @@ export default function SetParticipant({route, navigation}) {
         ));
     }
 
-    const insertParticipant = async (participant) => {
+    const addParticipant = async (participant) => {
         const spiders = JSON.stringify(participant.spiders);
         const participantData = {...participant, spiders};
         try {
             const res = await DB.insertIntoTable('participants', participantData);
-            dispatch(addParticipant(participant));
+            dispatch(actions.addParticipant(participant));
             console.log(res);
             //dispatch(addNotMatch(newParticipant));
             
+        } catch(error) {
+            console.log(error);
+        }
+    }
+
+    const updateParticipant = async (participant) => {
+        const spiders = JSON.stringify(participant.spiders);
+        const participantData = {...participant, spiders};
+        try {
+            const res = await DB.updateTable('participants', participantData, `key = ${participant.key}`);
+            dispatch(actions.updateParticipant(participant));
+            console.log(res);
         } catch(error) {
             console.log(error);
         }
@@ -89,12 +101,11 @@ export default function SetParticipant({route, navigation}) {
             const newParticipant = { ...participant, name, spiders:newSpiders };
             
             if(route.params) {
-                dispatch(updateParticipant(newParticipant));
+                updateParticipant(newParticipant);
             }
             else {
-                insertParticipant(newParticipant);
+                addParticipant(newParticipant);
             }
-
             navigation.goBack();
         }
     }
