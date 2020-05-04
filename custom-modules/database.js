@@ -183,3 +183,29 @@ export const deleteFromTable = (table, where) => {
         });
     });
 }
+
+export const insertRowsToTable = (table, valuesObjArr) => {
+    const len = valuesObjArr.length;
+    const columns = Object.getOwnPropertyNames(valuesObj[0]);
+    const sql = SQLBuilder.insertIntoTable(table, columns, len);
+    const values = valuesObjArr.reduce((acc, item) => {
+        item.forEach((val) => {
+            acc.push(val);
+        });
+        return acc;
+    },[]);
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                sql,
+                values,
+                ( _, res) => {
+                    resolve(res);
+                },
+                ( _, err) => { 
+                    reject(err); 
+                }
+            );
+        });
+    });
+}

@@ -61,3 +61,17 @@ export const updateTable = (table, columns, where) => {
 export const deleteFromTable = (table, where) => {
     return `DELETE FROM ${table} where ${where};`
 }
+
+export const insertRowsToTable = (table, columns, rows) => {
+    const placeholders = [];
+    for(let i=0; i<rows; i++) {
+        const l = columns.length;
+        let s = '(';
+        for(let x=0; x<l; x++) {
+            s +='?';
+            s += x === (l-1) ? ')' : ', '; 
+        }
+        placeholders.push(s);
+    }
+    return `INSERT INTO ${table} (${columns}) VALUES ${placeholders};`;
+}
