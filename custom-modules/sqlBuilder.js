@@ -4,7 +4,7 @@ export const createParticipantsTable = () => {
             "key"	TEXT NOT NULL UNIQUE,
             "name"	TEXT,
             "image"	TEXT,
-            "score"	TEXT,
+            "score"	NUMERIC,
             "alliesKey"	TEXT,
             "spiders"	TEXT NOT NULL,
             PRIMARY KEY("key")
@@ -62,7 +62,7 @@ export const deleteFromTable = (table, where) => {
     return `DELETE FROM ${table} where ${where};`
 }
 
-export const insertRowsToTable = (table, columns, rows) => {
+export const insertRowsIntoTable = (table, columns, rows) => {
     const placeholders = [];
     for(let i=0; i<rows; i++) {
         const l = columns.length;

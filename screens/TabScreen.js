@@ -17,7 +17,9 @@ export default function TabScreen() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                //await DB.dropTable('participants');
                 const data = await DB.initParticipants();
+                console.log(data);
                 dispatch(actions.initParticipants(data));
                 setIsReady(true);
             } catch (error) {

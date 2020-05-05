@@ -134,7 +134,7 @@ export const initParticipants = () => {
             return getAllParticipants();
         }).then(({rows:{ _array }}) => {
             const participants = _array.map((item) => ({
-                ...item, score:Number(item.score), spiders:JSON.parse(item.spiders)
+                ...item, spiders:JSON.parse(item.spiders)
             }));
             resolve(participants);
         }).catch(error => reject(error));
@@ -158,7 +158,12 @@ export const initMatches = () => {
 }
 
 export const insertMatch = (match) => {
-    const matchData = {...match, isMarked:0, spiders:JSON.stringify(match.spiders)};
+    const matchData = {
+        key:match.key,
+        isMarked:0,
+        result: null,
+        spiders:JSON.stringify(match.spiders)
+    };
     return new Promise((resolve, reject) => {
         insertIntoTable('matches', matchData).then((res) => {
             resolve(res);
@@ -184,13 +189,13 @@ export const deleteFromTable = (table, where) => {
     });
 }
 
-export const insertRowsToTable = (table, valuesObjArr) => {
+export const insertRowsIntoTable = (table, valuesObjArr) => {
     const len = valuesObjArr.length;
-    const columns = Object.getOwnPropertyNames(valuesObj[0]);
-    const sql = SQLBuilder.insertIntoTable(table, columns, len);
+    const columns = Object.getOwnPropertyNames(valuesObjArr[0]);
+    const sql = SQLBuilder.insertRowsIntoTable(table, columns, len);
     const values = valuesObjArr.reduce((acc, item) => {
-        item.forEach((val) => {
-            acc.push(val);
+        columns.forEach((val) => {
+            acc.push(item[val]);
         });
         return acc;
     },[]);
@@ -199,6 +204,37 @@ export const insertRowsToTable = (table, valuesObjArr) => {
             tx.executeSql(
                 sql,
                 values,
+                ( _, res) => {
+                    resolve(res);
+                },
+                ( _, err) => { 
+                    reject(err); 
+                }
+            );
+        });
+    });
+}
+
+export const insertMatches = (matches) => {
+    const matchesData = matches.map((match) => ({
+        key:match.key,
+        isMarked:0,
+        result: null,
+        spiders:JSON.stringify(match.spiders)
+    }));
+    return new Promise((resolve, reject) => {
+        insertRowsIntoTable('matches', matchesData).then((res) => {
+            resolve(res);
+        }).catch(error => reject(error));
+    })
+}
+
+export const addParticipantScore = (score, where) => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                `UPDATE participants SET score = score + ${score} WHERE ${where};`,
+                [],
                 ( _, res) => {
                     resolve(res);
                 },

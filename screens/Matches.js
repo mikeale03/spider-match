@@ -49,10 +49,20 @@ function Matches({navigation}) {
     setIsCreate(false);
   }
 
-  const autoMatchAll = () => {
-    const result = matchAllParticipantsSpiders(notMatch);
-    dispatch(updateMatches(matches.concat(result.matches)));
-    dispatch(updateNotMatch(result.notMatch));
+  const autoMatchAll = async () => {
+    if(isReady) {
+      setIsReady(false);
+      const result = matchAllParticipantsSpiders(notMatch);
+      try {
+        const r = await DB.insertMatches(result.matches);
+        console.log(r);
+        dispatch(updateMatches(matches.concat(result.matches)));
+        dispatch(updateNotMatch(result.notMatch));
+      } catch(error) {
+        console.error(error);
+      }
+    }
+    setIsReady(true);
   }
 
   const autoMatch = async () => {
@@ -96,20 +106,29 @@ function Matches({navigation}) {
     setIsShowCheckBox(true);
   }
   
-  const resetMark = () => {
-    const newMatches = MatchesUpdater.matchResetMark(matches);
-    dispatch(updateMatches(newMatches));
-    setIsShowCheckBox(false);
+  const resetMark = async () => {
+    if(isReady) {
+      setIsReady(false);
+      try {
+        const r = await DB.updateTable('matches', {isMarked: 0}, 'isMarked = 1');
+        console.log(r);
+        const newMatches = MatchesUpdater.matchResetMark(matches);
+        dispatch(updateMatches(newMatches));
+        setIsShowCheckBox(false);
+      } catch (error) {
+        console.error(error);
+      }
+      setIsReady(true);
+    }
   }
 
-  const deleteMarkedHandler = () => {
-    // if(isReady) {
-    //   setIsReady(false);
-    //   try {
-    //     const r = await DB.deleteFromTable('matches', 'isMarked = 1');
-        //console.log(r);
+  const deleteMarkedHandler = async () => {
+    if(isReady) {
+      setIsReady(false);
+      try {
+        const r = await DB.deleteFromTable('matches', 'isMarked = 1');
+        console.log(r);
         const {newMatches, markedItem} = MatchesUpdater.deleteMarked(matches);
-        console.log(markedItem);
         const newNotMatch = addNotMatchArr(notMatch, markedItem);
         setIsShowCheckBox(false);
         dispatch({
@@ -118,11 +137,11 @@ function Matches({navigation}) {
         })
         dispatch(updateMatches(newMatches));
         dispatch(updateNotMatch(newNotMatch));
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    //   setIsReady(true);
-    // }
+      } catch (error) {
+        console.log(error);
+      }
+      setIsReady(true);
+    }
   }
 
   const markAllHandler = async () => {
@@ -150,7 +169,6 @@ function Matches({navigation}) {
         // const r = await DB.dropTable('matches');
         // console.log(r);
         const newMatches = await DB.initMatches();
-        console.log(newMatches);
         dispatch(updateMatches(newMatches));
         const newNotMatch = generateNotMatch(participants, newMatches);
         dispatch(updateNotMatch(newNotMatch));

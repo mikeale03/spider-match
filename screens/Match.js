@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableNativeFeedback } from 'react-native';
 import SMButton from '../components/custom/SMButton';
 import { useDispatch } from 'react-redux';
+import * as DB from '../custom-modules/database';
 
 export default function Match({route}) {
     const dispatch = useDispatch();
@@ -9,27 +10,37 @@ export default function Match({route}) {
     const [result, setResult] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const onResultSelectHandler = (value) => {
-
-        if(value !== 'Draw')
-            value = {
-                spiderKey:value.key,
-                participantKey:value.parentKey,
-                participantName:value.participantName,
+    const onResultSelectHandler = async (value) => {
+        let dataObj = {result:value};
+        try {
+            if(value !== 'Draw') {
+                value = {
+                    spiderKey:value.key,
+                    participantKey:value.parentKey,
+                    participantName:value.participantName,
+                }
+                dataObj = {result:JSON.stringify(value)};
+                await DB.addParticipantScore(1, `key = ${value.participantKey}`);
+            } 
+            if (result !== 'Draw' && result !== null) {
+                await DB.addParticipantScore(-1, `key = ${result.participantKey}`);
             }
-
+            await DB.updateTable('matches', dataObj, `key = ${matchItem.key}`);
+        } catch(error) {
+            console.error(error);
+        }
         const res = {prev:result, next:value};
         dispatch({
              type:'UPDATE_SCORE',
              result:res,
         });
-        //console.log(res);
         const newMatchItem = {...matchItem, result:value};
         dispatch({
             type:'UPDATE_MATCH',
             match:newMatchItem
         })
         setResult(value);
+        setIsModalVisible(false);
     }
 
     useEffect(() => {
@@ -59,14 +70,14 @@ export default function Match({route}) {
                 </View>
                 <View style={styles.matchDetailsContainer}>
                     <View style={styles.detailsWrapper}>
-                        <Text>{matchItem.match[0].participantName}</Text>
-                        <Text>Wt: {matchItem.match[0].weight}</Text>
-                        <Text>{matchItem.match[0].otherDetails}</Text>
+                        <Text>{matchItem.spiders[0].participantName}</Text>
+                        <Text>Wt: {matchItem.spiders[0].weight}</Text>
+                        <Text>{matchItem.spiders[0].otherDetails}</Text>
                     </View>
                     <View style={styles.detailsWrapper}>
-                        <Text>{matchItem.match[1].participantName}</Text>
-                        <Text>Wt: {matchItem.match[1].weight}</Text>
-                        <Text>{matchItem.match[1].otherDetails}</Text>
+                        <Text>{matchItem.spiders[1].participantName}</Text>
+                        <Text>Wt: {matchItem.spiders[1].weight}</Text>
+                        <Text>{matchItem.spiders[1].otherDetails}</Text>
                     </View>
                 </View>
                 <View style={{alignItems:'center'}}>
@@ -87,7 +98,7 @@ export default function Match({route}) {
                         <View style={{ alignItems: 'center' }}>
                             <Text style={{ fontSize: 16, fontWeight: 'bold', alignSelf: 'stretch', textAlign: 'center', padding: 10 }}>Select Result</Text>
                         </View>
-                            { matchItem.match.map((item) => (
+                            { matchItem.spiders.map((item) => (
                                 <TouchableNativeFeedback
                                     onPress={() => onResultSelectHandler(item)}
                                     key={item.key}
