@@ -22,19 +22,22 @@ export const dropTable = (table) => {
 
 export const createParticipantsTable = () => {
     return new Promise((resolve, reject) => {
-        db.transaction(tx => {
-            tx.executeSql(
-                SQLBuilder.createParticipantsTable(),
-                [],
-                ( _, res) => {
-                    resolve('created');
-                },
-                ( _, err) => { 
-                    reject(err); 
-                }
-            );
+        db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {
+            console.log('Foreign keys turned on')
+            db.transaction(tx => {
+                tx.executeSql(
+                    SQLBuilder.createParticipantsTable(),
+                    [],
+                    ( _, res) => {
+                        resolve('created');
+                    },
+                    ( _, err) => { 
+                        reject(err); 
+                    }
+                );
+            });
         });
-    })
+    });
 }
 
 export const createMatchesTable = () => {
@@ -147,10 +150,9 @@ export const initMatches = () => {
             return getAllFromTable('matches');
         }).then(({rows:{ _array }}) => {
             const matches = _array.map((item) => ({
-                key:item.key,
+                ...item,
                 isMarked:item.isMarked === 0 ? false : true,
-                result: (item.result !== 'Draw' && item.result !== null) ? JSON.parse(item.result) : item.result,
-                spiders:JSON.parse(item.spiders)
+                spiders:JSON.parse(item.spiders),
             }));
             resolve(matches);
         }).catch(error => reject(error));
@@ -159,9 +161,8 @@ export const initMatches = () => {
 
 export const insertMatch = (match) => {
     const matchData = {
-        key:match.key,
+        ...match,
         isMarked:0,
-        result: null,
         spiders:JSON.stringify(match.spiders)
     };
     return new Promise((resolve, reject) => {
@@ -217,9 +218,8 @@ export const insertRowsIntoTable = (table, valuesObjArr) => {
 
 export const insertMatches = (matches) => {
     const matchesData = matches.map((match) => ({
-        key:match.key,
+        ...match,
         isMarked:0,
-        result: null,
         spiders:JSON.stringify(match.spiders)
     }));
     return new Promise((resolve, reject) => {
@@ -245,3 +245,40 @@ export const addParticipantScore = (score, where) => {
         });
     });
 }
+
+export const revertParticipantsWinScore = () => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                SQLBuilder.revertParticipantsWinScore(),
+                [],
+                ( _, res) => {
+                    resolve(res);
+                },
+                ( _, err) => { 
+                    reject(err); 
+                }
+            );
+        });
+    });
+}
+
+export const revertParticipantsDrawScore = () => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                SQLBuilder.revertParticipantsDrawScore(),
+                [],
+                ( _, res) => {
+                    resolve(res);
+                },
+                ( _, err) => { 
+                    reject(err); 
+                }
+            );
+        });
+    });
+}
+
+// UPDATE participants SET score = score - (SELECT sum(score) from matches m WHERE m.isMarked = 1 AND result = 'Draw' AND (m.participant1 = participants.key OR m.participant2 = participants.key)) WHERE EXISTS 
+// (SELECT * from matches m WHERE m.isMarked = 1 AND result = 'Draw' AND (m.participant1 = participants.key OR m.participant2 = participants.key));

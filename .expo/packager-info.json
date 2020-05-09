@@ -2,9 +2,9 @@
   "devToolsPort": 19002,
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 9232,
+  "packagerPid": 6768,
   "expoServerNgrokUrl": "https://sv-uv3.anonymous.spider-match.exp.direct",
   "packagerNgrokUrl": "https://packager.sv-uv3.anonymous.spider-match.exp.direct",
-  "ngrokPid": 5256,
+  "ngrokPid": 6192,
   "webpackServerPort": null
 }

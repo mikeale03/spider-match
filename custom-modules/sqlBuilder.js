@@ -19,6 +19,9 @@ export const createMatchesTable = () => {
             "result"	TEXT,
             "spiders"	TEXT NOT NULL,
             "isMarked" INTEGER NOT NULL,
+            "participant1"	TEXT NOT NULL,
+            "participant2"	TEXT NOT NULL,
+            "score"	INTEGER,
             PRIMARY KEY("key")
         );`
     );
@@ -74,4 +77,18 @@ export const insertRowsIntoTable = (table, columns, rows) => {
         placeholders.push(s);
     }
     return `INSERT INTO ${table} (${columns}) VALUES ${placeholders};`;
+}
+
+export const revertParticipantsDrawScore = () => {
+    return `UPDATE participants SET score = score - 
+    (SELECT sum(score) from matches m WHERE m.isMarked = 1 AND result = 'Draw' AND 
+    (m.participant1 = participants.key OR m.participant2 = participants.key)) WHERE EXISTS 
+    (SELECT * from matches m WHERE m.isMarked = 1 AND result = 'Draw' AND 
+    (m.participant1 = participants.key OR m.participant2 = participants.key));`
+}
+
+export const revertParticipantsWinScore = () => {
+    return `UPDATE participants SET score = score - 
+    (SELECT sum(score) from matches m WHERE m.isMarked = 1 AND result = participants.key) WHERE EXISTS 
+    (SELECT * from matches m WHERE m.isMarked = 1 AND result = participants.key);`
 }

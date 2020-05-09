@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { deleteParticipant } from '../../redux/actions';
 import ErrorCatch from '../error-catch/ErrorBoundary';
 import SMImage from '../custom/SMImage';
-
+import * as DB from '../../custom-modules/database';
 function Item({participant}) {
     const navigation = useNavigation();
     const dispatch = useDispatch();
@@ -16,7 +16,8 @@ function Item({participant}) {
         navigation.navigate('SetParticipant', {participant});
     };
 
-    const deleteHandler = () => {
+    const deleteHandler = async () => {
+        await DB.deleteFromTable('participants', `key = ${participant.key}`);
         dispatch(deleteParticipant(participant));
     }
     

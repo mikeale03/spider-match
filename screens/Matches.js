@@ -10,7 +10,7 @@ import { FlatList, TouchableNativeFeedback } from 'react-native-gesture-handler'
 import { updateMatches, updateNotMatch } from "../redux/actions";
 import SMButton from '../components/custom/SMButton';
 import { matchAllParticipantsSpiders, getSingleMatchWithLeastDif } from '../custom-modules/autoMatchMaker';
-import * as MatchesUpdater from '../custom-modules/matchesUpdater';
+import * as matchesUpdater from '../custom-modules/matchesUpdater';
 import { addNotMatchArr, removeNotMatch, generateNotMatch } from '../custom-modules/notMatchUpdater';
 import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
 import * as DB from '../custom-modules/database';
@@ -30,6 +30,9 @@ function Matches({navigation}) {
       key:Date.now().toString(),
       isMarked: false,
       result:null,
+      participant1:spiders[0].parentKey,
+      participant2:spiders[1].parentKey,
+      score:null,
       spiders
     };
     try{
@@ -86,17 +89,12 @@ function Matches({navigation}) {
   const onMark = async (matchItem) => {
     if(isReady) {
       setIsReady(false);
-      const data = {
-        isMarked: matchItem.isMarked ? 0 : 1
+      try {
+        const newMatches = await matchesUpdater.mark(matches, matchItem);
+        dispatch(updateMatches(newMatches));
+      } catch(error) {
+        console.error(error);
       }
-      const r = await DB.updateTable('matches',data, `key = ${matchItem.key}`);
-      console.log(r);
-      const newMatches = matches.map((item) => {
-        return (
-          item.key === matchItem.key ? {...item, isMarked: !matchItem.isMarked} : item
-        )
-      });
-      dispatch(updateMatches(newMatches));
       setIsReady(true);
     }
   }
@@ -110,9 +108,7 @@ function Matches({navigation}) {
     if(isReady) {
       setIsReady(false);
       try {
-        const r = await DB.updateTable('matches', {isMarked: 0}, 'isMarked = 1');
-        console.log(r);
-        const newMatches = MatchesUpdater.matchResetMark(matches);
+        const newMatches = await matchesUpdater.matchResetMark(matches);
         dispatch(updateMatches(newMatches));
         setIsShowCheckBox(false);
       } catch (error) {
@@ -126,9 +122,10 @@ function Matches({navigation}) {
     if(isReady) {
       setIsReady(false);
       try {
-        const r = await DB.deleteFromTable('matches', 'isMarked = 1');
-        console.log(r);
-        const {newMatches, markedItem} = MatchesUpdater.deleteMarked(matches);
+        console.info('win: ',await DB.revertParticipantsWinScore());
+        console.info('draw: ',await DB.revertParticipantsDrawScore());
+        await DB.deleteFromTable('matches', 'isMarked = 1');
+        const {newMatches, markedItem} = matchesUpdater.deleteMarked(matches);
         const newNotMatch = addNotMatchArr(notMatch, markedItem);
         setIsShowCheckBox(false);
         dispatch({
@@ -138,7 +135,7 @@ function Matches({navigation}) {
         dispatch(updateMatches(newMatches));
         dispatch(updateNotMatch(newNotMatch));
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
       setIsReady(true);
     }
@@ -148,9 +145,7 @@ function Matches({navigation}) {
     if(isReady) {
       setIsReady(false);
       try {
-        const r = await DB.updateTable('matches',{isMarked:1}, `isMarked = 0`);
-        console.log(r);
-        const newMatches = MatchesUpdater.markAll(matches);
+        const newMatches = await matchesUpdater.markAll(matches);
         dispatch(updateMatches(newMatches));
       } catch(error) {
         console.error(error);
@@ -166,8 +161,8 @@ function Matches({navigation}) {
 
     const fetchData = async () => {
       try {
-        // const r = await DB.dropTable('matches');
-        // console.log(r);
+        //const r = await DB.dropTable('matches');
+        //console.log(r);
         const newMatches = await DB.initMatches();
         dispatch(updateMatches(newMatches));
         const newNotMatch = generateNotMatch(participants, newMatches);
@@ -179,10 +174,6 @@ function Matches({navigation}) {
     }
     fetchData();
   }, []);
-
-  useEffect(() => {
-    
-  },[matches,notMatch]);
 
   useFocusEffect(
     React.useCallback(() => {

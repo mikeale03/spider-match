@@ -2,52 +2,74 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableNativeFeedback } from 'react-native';
 import SMButton from '../components/custom/SMButton';
 import { useDispatch } from 'react-redux';
+import * as actions from '../redux/actions';
 import * as DB from '../custom-modules/database';
 
 export default function Match({route}) {
     const dispatch = useDispatch();
     const { matchItem } = route.params;
     const [result, setResult] = useState(null);
+    const [winSpider, setWinSpider] = useState(null);
+    const [prevScore, setPrevScore] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const onResultSelectHandler = async (value) => {
-        let dataObj = {result:value};
+        const p1key = matchItem.spiders[0].isJoker ? 'null' : matchItem.spiders[0].parentKey;
+        const p2key = matchItem.spiders[1].isJoker ? 'null' : matchItem.spiders[1].parentKey;
+        const DRAW_SCORE = 0.5;
+        const WIN_SCORE = 1;
+        let score;
         try {
             if(value !== 'Draw') {
-                value = {
-                    spiderKey:value.key,
-                    participantKey:value.parentKey,
-                    participantName:value.participantName,
+                score = value.isJoker ? 0 : WIN_SCORE;
+                if(!value.isJoker) {
+                    await DB.addParticipantScore(score, `key = ${value.parentKey}`);
+                    await DB.updateTable('matches', {result:value.parentKey, score}, `key = ${matchItem.key}`);
+                    dispatch(actions.addScore(score,[value.parentKey]));
                 }
-                dataObj = {result:JSON.stringify(value)};
-                await DB.addParticipantScore(1, `key = ${value.participantKey}`);
-            } 
-            if (result !== 'Draw' && result !== null) {
-                await DB.addParticipantScore(-1, `key = ${result.participantKey}`);
+                setWinSpider(value);
+                value = value.parentKey;
+            } else {
+                score = DRAW_SCORE;
+                await DB.addParticipantScore(score, `key = ${p1key} OR key = ${p2key}`);
+                await DB.updateTable('matches',
+                    {result:value, score, participant1:p1key, participant2:p2key},
+                    `key = ${matchItem.key}`
+                );
+                dispatch(actions.addScore(score,[p1key, p2key]));
             }
-            await DB.updateTable('matches', dataObj, `key = ${matchItem.key}`);
+            if(result !== null && result === 'Draw') {
+                await DB.addParticipantScore(-prevScore, `key = ${p1key} OR key = ${p2key}`);
+                dispatch(actions.addScore(-prevScore,[p1key, p2key]))
+            } else if (result !== null) {
+                await DB.addParticipantScore(-prevScore, `key = ${result}`);
+                dispatch(actions.addScore(-prevScore,[result]))
+            }
+            const newMatchItem = {...matchItem, result:value, score};
+            dispatch({
+                type:'UPDATE_MATCH',
+                match:newMatchItem
+            })
+            setResult(value);
+            setPrevScore(score);
+            setIsModalVisible(false);
         } catch(error) {
             console.error(error);
         }
-        const res = {prev:result, next:value};
-        dispatch({
-             type:'UPDATE_SCORE',
-             result:res,
-        });
-        const newMatchItem = {...matchItem, result:value};
-        dispatch({
-            type:'UPDATE_MATCH',
-            match:newMatchItem
-        })
-        setResult(value);
-        setIsModalVisible(false);
+        // const res = {prev:result, next:value.parentKey};
+        // dispatch({
+        //      type:'UPDATE_SCORE',
+        //      result:res,
+        // });
     }
 
     useEffect(() => {
         if(matchItem.result) {
             setResult(matchItem.result);
+            setPrevScore(matchItem.score);
+            setWinSpider(matchItem.spiders.find((spider) => spider.parentKey === matchItem.result))
         }
-        console.log(matchItem);
+        //console.log(matchItem);
     },[matchItem])
 
     return (
@@ -83,7 +105,7 @@ export default function Match({route}) {
                 <View style={{alignItems:'center'}}>
                     <SMButton title='Result:' onPress={() => setIsModalVisible(true)} />
                     { result !== null && (
-                        <Text>{result === 'Draw' ? result : result.participantName+' wins'}</Text>
+                        <Text>{result === 'Draw' ? result : winSpider.participantName+' wins'}</Text>
                     )}
                 </View>
             </View>

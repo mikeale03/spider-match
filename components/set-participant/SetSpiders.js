@@ -39,6 +39,11 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
         onDelete(spider);
     }
     
+    const isJokerSwitch = (index) => {
+        const spider = {...spiders[index], isJoker:!spiders[index].isJoker}
+        onEdit(spider);
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.title}>
@@ -71,7 +76,10 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
                     </View>
                     <View style={styles.switchContainer}>
                         <Text>joker?</Text>
-                        <Switch />
+                        <Switch
+                            onValueChange={() => isJokerSwitch(index)}
+                            value={item.isJoker}
+                        />
                     </View>
                     <TouchableNativeFeedback onPress={() => deleteHandler(item)}>
                         <View style={styles.remove}>
