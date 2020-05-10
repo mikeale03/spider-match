@@ -7,7 +7,8 @@ export const createParticipantsTable = () => {
             "score"	NUMERIC,
             "alliesKey"	TEXT,
             "spiders"	TEXT NOT NULL,
-            PRIMARY KEY("key")
+            PRIMARY KEY("key"),
+            FOREIGN KEY("alliesKey") REFERENCES "allies"("key") ON DELETE SET NULL
         );`
     );
 }
@@ -31,6 +32,7 @@ export const createAlliesTable = () => {
     return (
         `CREATE TABLE IF NOT EXISTS "allies" (
             "key"	TEXT NOT NULL UNIQUE,
+            "groupName" TEXT,
             "participants"	TEXT,
             PRIMARY KEY("key")
         );`

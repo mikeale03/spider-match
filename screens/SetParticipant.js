@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Alert, } from 'react-native';
 import { useDispatch } from "react-redux";
 import * as actions /*{ actions.addParticipant, updateParticipant, addNotMatch }*/ from '../redux/actions';
 import * as DB from "../custom-modules/database";
@@ -8,7 +8,9 @@ import Spiders from '../components/set-participant/SetSpiders';
 import ErrorBoundary from  '../components/error-catch/ErrorBoundary';
 import SMTextInput from '../components/custom/SMTextInput';
 import SMImage from '../components/custom/SMImage';
-import { participants } from '../components/TempData';
+import { AntDesign } from '@expo/vector-icons'
+import * as ImagePicker from 'expo-image-picker';
+import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 
 export default function SetParticipant({route, navigation}) {
     const dispatch = useDispatch();
@@ -114,13 +116,23 @@ export default function SetParticipant({route, navigation}) {
         navigation.goBack();
     }
 
+    const launchCamera = async () => {
+        const data = await ImagePicker.launchCameraAsync({allowsEditing:true, aspect:[1,1]});
+        console.info('camera: ', data);
+        !data.cancelled && setParticipant({...participant, image:data.uri});
+    }
+
     return (
         <View style={styles.container}>
             <ErrorBoundary>
                 <ScrollView keyboardShouldPersistTaps='always'>
                     <View style={styles.innerContainer}>
                         <View style={styles.profilePicContainer}>
-                            <SMImage shape={'circle'} />
+                            <TouchableNativeFeedback onPress={launchCamera} >
+                                <SMImage shape={'circle'} uri={participant.image}
+                                    fallbackRender={() => (<AntDesign name='user' size={60} color='#ccc' />)}
+                                />
+                            </TouchableNativeFeedback>
                         </View>
                         <View style={styles.inputWrapper}>
                             <SMTextInput

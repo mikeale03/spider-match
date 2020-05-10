@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Modal, TouchableNativeFeedback } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableNativeFeedback, Image } from 'react-native';
 import SMButton from '../components/custom/SMButton';
 import { useDispatch } from 'react-redux';
 import * as actions from '../redux/actions';
 import * as DB from '../custom-modules/database';
+import { ScrollView } from 'react-native-gesture-handler';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export default function Match({route}) {
     const dispatch = useDispatch();
@@ -56,11 +58,6 @@ export default function Match({route}) {
         } catch(error) {
             console.error(error);
         }
-        // const res = {prev:result, next:value.parentKey};
-        // dispatch({
-        //      type:'UPDATE_SCORE',
-        //      result:res,
-        // });
     }
 
     useEffect(() => {
@@ -74,72 +71,96 @@ export default function Match({route}) {
 
     return (
         <View style={styles.container}>
-            <View style={styles.matchContainer}>
-                <View style={styles.matchImagesContainer}>
-                    <View style={styles.imageContainer}>
-                        <View style={styles.imageWrapper}>
-
+            <ScrollView contentContainerStyle={{flexGrow: 1, justifyContent:'center'}}>
+                <View style={styles.matchContainer}>
+                    <View style={styles.matchImagesContainer}>
+                        <View style={styles.imageContainer}>
+                            { matchItem.spiders[0].image ? 
+                                (<Image style={styles.imageWrapper} source={{uri:matchItem.spiders[0].image}}/>) :
+                                (<View style={styles.imageWrapper}>
+                                    <FontAwesome5 name='spider' size={60} color='#ccc'/>
+                                </View>)
+                            }
+                        </View>
+                        <View style={styles.vsContainer}>
+                            <Text style={{fontSize:30, fontWeight:'bold'}}>VS</Text>
+                        </View>
+                        <View style={styles.imageContainer}>
+                            { matchItem.spiders[1].image ? 
+                                (<Image style={styles.imageWrapper} source={{uri:matchItem.spiders[1].image}}/>) :
+                                (<View style={styles.imageWrapper}>
+                                    <FontAwesome5 name='spider' size={60} color='#ccc'/>
+                                </View>)
+                            }
                         </View>
                     </View>
-                    <View style={styles.vsContainer}>
-                        <Text style={{fontSize:30, fontWeight:'bold'}}>VS</Text>
-                    </View>
-                    <View style={styles.imageContainer}>
-                        <View style={styles.imageWrapper}>
-
+                    <View style={styles.matchDetailsContainer}>
+                        <View style={styles.detailsWrapper}>
+                            <Text style={[styles.participantName]} numberOfLines={2}>
+                                {matchItem.spiders[0].participantName}
+                            </Text>
+                            <View style={{flexDirection:'row', alignItems:'center'}}>
+                                <Text style={styles.text}>Wt: {matchItem.spiders[0].weight}  </Text>
+                                <Text style={[styles.text,{color:'#A36023'}]}>
+                                    {matchItem.spiders[0].isJoker && 'joker'}
+                                </Text>
+                            </View>
+                            <Text style={styles.text}  numberOfLines={2}>
+                                {matchItem.spiders[0].otherDetails}
+                            </Text>
+                        </View>
+                        <View style={styles.detailsWrapper}>
+                            <Text style={[styles.participantName]}>{matchItem.spiders[1].participantName}</Text>
+                            <View style={{flexDirection:'row', alignItems:'center'}}>
+                                <Text style={styles.text}>Wt: {matchItem.spiders[1].weight}  </Text>
+                                <Text style={{color:'#A36023'}}>
+                                    {matchItem.spiders[1].isJoker && 'joker'}
+                                </Text>
+                            </View>
+                            <Text style={styles.text}>{matchItem.spiders[1].otherDetails}</Text>
                         </View>
                     </View>
-                </View>
-                <View style={styles.matchDetailsContainer}>
-                    <View style={styles.detailsWrapper}>
-                        <Text>{matchItem.spiders[0].participantName}</Text>
-                        <Text>Wt: {matchItem.spiders[0].weight}</Text>
-                        <Text>{matchItem.spiders[0].otherDetails}</Text>
-                    </View>
-                    <View style={styles.detailsWrapper}>
-                        <Text>{matchItem.spiders[1].participantName}</Text>
-                        <Text>Wt: {matchItem.spiders[1].weight}</Text>
-                        <Text>{matchItem.spiders[1].otherDetails}</Text>
+                    <View style={{alignItems:'center', paddingTop:10}}>
+                        <SMButton title='Result:' onPress={() => setIsModalVisible(true)} />
+                        { result !== null && (
+                            <Text style={[styles.participantName,{marginTop:10}]} numberOfLines={2}>
+                                {result === 'Draw' ? result : winSpider.participantName+' wins'}
+                            </Text>
+                        )}
                     </View>
                 </View>
-                <View style={{alignItems:'center'}}>
-                    <SMButton title='Result:' onPress={() => setIsModalVisible(true)} />
-                    { result !== null && (
-                        <Text>{result === 'Draw' ? result : winSpider.participantName+' wins'}</Text>
-                    )}
-                </View>
-            </View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={isModalVisible}
-                onRequestClose={() => setIsModalVisible(false)}
-            >
-                <View style={{ flex: 1, backgroundColor: '#00000066', justifyContent: 'center', alignItems: 'center', padding: 60 }}>
-                    <View style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}>
-                        <View style={{ alignItems: 'center' }}>
-                            <Text style={{ fontSize: 16, fontWeight: 'bold', alignSelf: 'stretch', textAlign: 'center', padding: 10 }}>Select Result</Text>
-                        </View>
-                            { matchItem.spiders.map((item) => (
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={isModalVisible}
+                    onRequestClose={() => setIsModalVisible(false)}
+                >
+                    <View style={{ flex: 1, backgroundColor: '#00000066', justifyContent: 'center', alignItems: 'center', padding: 60 }}>
+                        <View style={{ backgroundColor: 'white', padding: 15, borderRadius: 10 }}>
+                            <View style={{ alignItems: 'center' }}>
+                                <Text style={{ fontSize: 16, fontWeight: 'bold', alignSelf: 'stretch', textAlign: 'center', padding: 10 }}>Select Result</Text>
+                            </View>
+                                { matchItem.spiders.map((item) => (
+                                    <TouchableNativeFeedback
+                                        onPress={() => onResultSelectHandler(item)}
+                                        key={item.key}
+                                    >
+                                        <View style={{ paddingVertical: 10, paddingHorizontal: 20, alignItems:'center' }}>
+                                            <Text style={{ fontSize: 16 }} numberOfLines={1}>{item.participantName} wins</Text>
+                                        </View>
+                                    </TouchableNativeFeedback>
+                                ))}
                                 <TouchableNativeFeedback
-                                    onPress={() => onResultSelectHandler(item)}
-                                    key={item.key}
+                                    onPress={() => onResultSelectHandler('Draw')}
                                 >
                                     <View style={{ paddingVertical: 10, paddingHorizontal: 20, alignItems:'center' }}>
-                                        <Text style={{ fontSize: 16 }} numberOfLines={1}>{item.participantName} wins</Text>
+                                        <Text style={{ fontSize: 16 }} numberOfLines={1}>Draw</Text>
                                     </View>
                                 </TouchableNativeFeedback>
-                            ))}
-                            <TouchableNativeFeedback
-                                onPress={() => onResultSelectHandler('Draw')}
-                            >
-                                <View style={{ paddingVertical: 10, paddingHorizontal: 20, alignItems:'center' }}>
-                                    <Text style={{ fontSize: 16 }} numberOfLines={1}>Draw</Text>
-                                </View>
-                            </TouchableNativeFeedback>
+                        </View>
                     </View>
-                </View>
-            </Modal>
+                </Modal>
+            </ScrollView>
         </View>
     )
 }
@@ -147,15 +168,21 @@ export default function Match({route}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems:'stretch',
-        justifyContent:'center'
+        paddingTop: 24,
+        //alignItems:'stretch',
+        //justifyContent:'center',
     },
     matchContainer: {
-        borderWidth:1,
+        paddingTop: 10,
     },
+    scrollView: {
+        flex: 1,
+    },
+    
     matchImagesContainer: {
         flexDirection:'row',
-        padding:15,
+        paddingHorizontal:15,
+        paddingBottom:15,
     },
     imageContainer: {
         justifyContent:'center',
@@ -163,10 +190,13 @@ const styles = StyleSheet.create({
         flexDirection:'row'
     },
     imageWrapper: {
-        backgroundColor:'#ccc',
+        backgroundColor:'gray',
         flexGrow:1,
         aspectRatio:1,
         maxWidth:200,
+        borderRadius: 10,
+        alignItems:'center',
+        justifyContent:'center',
     },
     vsContainer: {
         justifyContent:'center',
@@ -178,5 +208,14 @@ const styles = StyleSheet.create({
     detailsWrapper: {
         flex:1,
         alignItems:'center',
+    },
+    text: {
+        fontSize:15,
+        textAlign:'center',
+    },
+    participantName: {
+        fontSize:18,
+        fontWeight:'bold',
+        textAlign:'center',
     }
 });

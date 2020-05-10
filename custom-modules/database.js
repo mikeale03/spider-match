@@ -57,6 +57,23 @@ export const createMatchesTable = () => {
     })
 }
 
+export const createAlliesTable = () => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                SQLBuilder.createAlliesTable(),
+                [],
+                ( _, res) => {
+                    resolve(res);
+                },
+                ( _, err) => { 
+                    reject(err); 
+                }
+            );
+        });
+    })
+}
+
 export const getAllParticipants = () => {
     return new Promise((resolve, reject) => {
         db.transaction(tx => {
@@ -155,6 +172,20 @@ export const initMatches = () => {
                 spiders:JSON.parse(item.spiders),
             }));
             resolve(matches);
+        }).catch(error => reject(error));
+    });
+}
+
+export const initAllies = () => {
+    return new Promise((resolve, reject) => {
+        createAlliesTable().then(() => {
+            return getAllFromTable('allies');
+        }).then(({rows:{ _array }}) => {
+            const allies = _array.map((item) => ({
+                ...item,
+                participants:JSON.parse(item.participants),
+            }));
+            resolve(allies);
         }).catch(error => reject(error));
     });
 }

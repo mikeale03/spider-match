@@ -19,7 +19,6 @@ export default function TabScreen() {
             try {
                 //await DB.dropTable('participants');
                 const data = await DB.initParticipants();
-                console.log(data);
                 dispatch(actions.initParticipants(data));
                 setIsReady(true);
             } catch (error) {
