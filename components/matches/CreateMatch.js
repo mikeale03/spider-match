@@ -8,7 +8,7 @@ export default function CreateMatch({notMatch, onCancel, onDone}) {
     const [items, setItems] = useState([]);
     const [participant1Items, setParticipant1Items] = useState([]);
     const [participant2Items, setParticipant2Items] = useState([]);
-    const [match, setMatch] = useState([null,null]);
+    const [spiders, setSpiders] = useState([null,null]);
 
 
     const onSelectParticipant1Handler = (value) => {
@@ -40,20 +40,20 @@ export default function CreateMatch({notMatch, onCancel, onDone}) {
     }
 
     const onSelectSpider1Handler = (value) => {
-        const newMatch = [...match];
-        newMatch[0] = value;
-        setMatch(newMatch);
+        const newSpiders = [...spiders];
+        newSpiders[0] = value;
+        setSpiders(newSpiders);
     }
 
     const onSelectSpider2Handler = (value) => {
-        const newMatch = [...match];
-        newMatch[1] = value;
-        setMatch(newMatch);
+        const newSpiders = [...spiders];
+        newSpiders[1] = value;
+        setSpiders(newSpiders);
     }
 
     const onDoneHandler = () => {
-        if(match[0] !== null && match[1] !== null)
-            onDone(match);
+        if(spiders[0] !== null && spiders[1] !== null)
+            onDone(spiders);
     }
 
     useEffect(() => {

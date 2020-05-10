@@ -2,11 +2,11 @@ import React from 'react';
 import { View, TouchableNativeFeedback, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
-
 import { useDispatch } from 'react-redux';
 import { deleteParticipant } from '../../redux/actions';
 import ErrorCatch from '../error-catch/ErrorBoundary';
 import SMImage from '../custom/SMImage';
+import * as DB from '../../custom-modules/database';
 
 function Item({participant}) {
     const navigation = useNavigation();
@@ -16,7 +16,8 @@ function Item({participant}) {
         navigation.navigate('SetParticipant', {participant});
     };
 
-    const deleteHandler = () => {
+    const deleteHandler = async () => {
+        await DB.deleteFromTable('participants', `key = ${participant.key}`);
         dispatch(deleteParticipant(participant));
     }
     
@@ -29,7 +30,9 @@ function Item({participant}) {
                 >
 
                     <View style={{flex:4, alignItems:'center', flexDirection:'row'}}>
-                        <SMImage shape='circle' size={50} />
+                        <SMImage shape='circle' size={50} uri={participant.image}
+                            fallbackRender={() => (<AntDesign name='user' size={50*.6} color='#ccc'/>)} 
+                        />
                         <Text style={{paddingStart: 10, fontSize:15}} numberOfLines={2}>{participant.name}</Text>
                     </View>
 

@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Text, Switch , TouchableNativeFeedback} from 'react-native';
+import { View, StyleSheet, TextInput, Text, Switch,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import SMTextInput from '../custom/SMTextInput';
 import SMButton from '../custom/SMButton';
 import { margins } from '../../utils/stylesheets/spacing';
 import SMImage from '../custom/SMImage';
+import { FontAwesome5 } from "@expo/vector-icons";
+import * as ImagePicker from 'expo-image-picker';
+import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 
 export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
     
@@ -39,6 +42,21 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
         onDelete(spider);
     }
     
+    const isJokerSwitch = (index) => {
+        const spider = {...spiders[index], isJoker:!spiders[index].isJoker}
+        onEdit(spider);
+    }
+
+    const launchCamera = async (item) => {
+        try {
+            const data = await ImagePicker.launchCameraAsync({allowsEditing:true, aspect:[1,1]});
+            console.info('camera: ', data);
+            !data.cancelled && onEdit({...item, image:data.uri});
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.title}>
@@ -47,7 +65,11 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
             { spiders && spiders.map((item, index) => (
                 <View key={item.key} style={styles.listContainer}>
                     <View style={styles.imageContainer}>
-                        <SMImage shape='square' size={70} />
+                        <TouchableNativeFeedback onPress={launchCamera.bind(this,item)}>
+                            <SMImage shape='square' size={70} uri={item.image}
+                                fallbackRender={() => (<FontAwesome5 name='spider' size={50*.6} color='#ccc'/>)}
+                            />
+                        </TouchableNativeFeedback>
                     </View>
                     <View style={styles.listInputContainer}>
                         <View style={[styles.listInputWrapper, margins.mb1,]}>
@@ -71,7 +93,10 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
                     </View>
                     <View style={styles.switchContainer}>
                         <Text>joker?</Text>
-                        <Switch />
+                        <Switch
+                            onValueChange={() => isJokerSwitch(index)}
+                            value={item.isJoker}
+                        />
                     </View>
                     <TouchableNativeFeedback onPress={() => deleteHandler(item)}>
                         <View style={styles.remove}>

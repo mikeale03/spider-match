@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, AsyncStorage } from 'react-native';
+import { View, StyleSheet, FlatList, } from 'react-native';
 import SMButton from '../components/custom/SMButton';
 import Header from '../components/custom/Header';
 import AlliesItem from '../components/allies/AlliesItem';
@@ -8,6 +8,7 @@ import { paddings, } from '../utils/stylesheets/spacing';
 import ErrorBoundary from '../components/error-catch/ErrorBoundary'
 import { useSelector, useDispatch } from 'react-redux';
 import { updateAllies, updateParticipants, updateParticipant } from '../redux/actions';
+import * as DB from "../custom-modules/database";
 
 export default function Allies({navigation, route}) {
 
@@ -15,31 +16,32 @@ export default function Allies({navigation, route}) {
     const [modal, setModal] = useState({isVisible:false, alliesIndex:null,});
     const participants = useSelector( state => state.participants );
     const allies = useSelector( state => state.allies );
-    const fetchingDone = useSelector( state => state.fetchingDone );
+    const [isReady, setIsReady] = useState(false);
     const dispatch = useDispatch();
     
     useEffect(() => {
         navigation.setOptions = {
             tabBarVisible:false,
         }
+        const fetchData = async () => {
+            try {
+                //const r = await DB.dropTable('allies');
+                //console.log(r);
+                const newAllies = await DB.initAllies();
+                //console.info('allies: ', newAllies);
+                dispatch(updateAllies(newAllies));
+            } catch (error) {
+                console.log(error);
+            }
+            setIsReady(true);
+        }
+        fetchData();
     },[]);
 
     useEffect(() => {
         const newItems = updateItems(participants);
         setItems(newItems);
     }, [participants]);
-
-    const setData = async () => {
-        try{
-            await AsyncStorage.setItem('allies', JSON.stringify(allies));
-        } catch(e) {
-            alert(e);
-        }
-    }
-
-    useEffect(() => {
-        fetchingDone && setData();
-    },[allies]);
 
     const updateItems = (newParticipants) => {
         const newItems = newParticipants.reduce((acc, item) => {
@@ -62,17 +64,31 @@ export default function Allies({navigation, route}) {
         return newParticipants;
     }
 
-    const onSelectHandler = (participant, alliesIndex) => {
-        const newAllies = [...allies];
-        const alliesKey = newAllies[alliesIndex].key;
-        newAllies[alliesIndex].participants.push(participant);
-        const newParticipants = updateParticipantsAlliesKey(participant, alliesKey);
-        dispatch(updateParticipants(newParticipants));
-        dispatch(updateAllies(newAllies));
-        setModal({
-            isVisible:false,
-            alliesIndex:null,
-        })
+    const onSelectHandler = async (participant, alliesIndex) => {
+        if(isReady) {
+            try {
+                const newAllies = [...allies];
+                const alliesKey = newAllies[alliesIndex].key;
+               
+                newAllies[alliesIndex].participants.push(participant);
+                const newParticipants = updateParticipantsAlliesKey(participant, alliesKey);
+                await DB.updateTable('participants',{alliesKey}, `key = ${participant.key}`);
+                await DB.updateTable(
+                    'allies',
+                    { participants:JSON.stringify(newAllies[alliesIndex].participants) },
+                    `key = ${alliesKey}`
+                );
+                dispatch(updateParticipants(newParticipants));
+                dispatch(updateAllies(newAllies));
+                setModal({
+                    isVisible:false,
+                    alliesIndex:null,
+                })
+            } catch (error) {
+                console.error(error);
+            }
+            setIsReady(true);
+        }
         
     }
 
@@ -83,45 +99,74 @@ export default function Allies({navigation, route}) {
         })
     }
 
-    const onDeleteParticipantHandler = (participant, alliesIndex) => {
-        const newAllies = [...allies]
-        newAllies[alliesIndex].participants = newAllies[alliesIndex].participants.filter((item) => {
-            return item.key === participant.key ? false : true ;
-        });
-        
-        const newParticipants = updateParticipantsAlliesKey(participant, null);
-        dispatch(updateParticipants(newParticipants));
-        dispatch(updateAllies(newAllies));
-    }
-
-    const onAddNewGroupHandler = () => {
-        let ctr = allies.length+1;
-        if(ctr>1 && allies[allies.length-1].participants.length < 1) {
-            return
-        }
-        dispatch(updateAllies([...allies, { 
-            key:Date.now().toString(),
-            groupName:'Group '+ctr,
-            participants:[],
-        }]));
-    }
-
-    const onDeleteGroupHandler = (alliesIndex) => {
-        let newAllies = [...allies];
-        let alliesParticipants = newAllies[alliesIndex].participants;
-        const length = alliesParticipants.length;
-        let newParticipants;
-        if(length)
-            newParticipants = updateParticipantsAlliesKey(alliesParticipants[0], null);
-        if(length>1)
-            for(let i=1;i<length;i++) {
-                newParticipants = updateParticipantsAlliesKey(alliesParticipants[i], null, newParticipants);
+    const onDeleteParticipantHandler = async (participant, alliesIndex) => {
+        if(isReady) {
+            try {
+                const newAllies = [...allies]
+                newAllies[alliesIndex].participants = newAllies[alliesIndex].participants.filter((item) => {
+                    return item.key === participant.key ? false : true ;
+                });
+                const newParticipants = updateParticipantsAlliesKey(participant, null);
+                await DB.updateTable('participants', {alliesKey:null}, `key = ${participant.key}`);
+                await DB.updateTable(
+                    'allies',
+                    { participants:JSON.stringify(newAllies[alliesIndex].participants) },
+                    `key = ${allies[alliesIndex].key}`
+                );
+                dispatch(updateParticipants(newParticipants));
+                dispatch(updateAllies(newAllies));
+            } catch(error) {
+                console.error(error);
             }
-        if(newParticipants) {
-            dispatch(updateParticipants(newParticipants));
+            setIsReady(true);
         }
-        newAllies.splice(alliesIndex,1);
-        dispatch(updateAllies(newAllies));
+    }
+
+    const onAddNewGroupHandler = async () => {
+        if(isReady) {
+            try {
+                let ctr = allies.length+1;
+                if(ctr>1 && allies[allies.length-1].participants.length < 1) {
+                    return
+                }
+                const newAllies = { 
+                    key:Date.now().toString(),
+                    groupName:'Group '+ctr,
+                    participants:[],
+                };
+                await DB.insertIntoTable('allies', {...newAllies,participants:''})
+                dispatch(updateAllies([...allies, newAllies]));
+            } catch (error) {
+                console.error(error);
+            }
+            setIsReady(true);
+        }
+    }
+
+    const onDeleteGroupHandler = async (alliesIndex) => {
+        if(isReady) {
+            try {
+                let newAllies = [...allies];
+                let alliesParticipants = newAllies[alliesIndex].participants;
+                const length = alliesParticipants.length;
+                let newParticipants;
+                if(length)
+                    newParticipants = updateParticipantsAlliesKey(alliesParticipants[0], null);
+                if(length>1)
+                    for(let i=1;i<length;i++) {
+                        newParticipants = updateParticipantsAlliesKey(alliesParticipants[i], null, newParticipants);
+                    }
+                if(newParticipants) {
+                    dispatch(updateParticipants(newParticipants));
+                }
+                await DB.deleteFromTable('allies',`key = ${allies[alliesIndex].key}`)
+                newAllies.splice(alliesIndex,1);
+                dispatch(updateAllies(newAllies));
+            } catch (error) {
+                console.error(error);
+            }
+            setIsReady(true);
+        }
     }
 
     return (

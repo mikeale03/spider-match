@@ -32,6 +32,12 @@ export const deleteParticipant = (participant) => ({
     participant
 });
 
+export const addScore = (score, keys) => ({
+    type: 'ADD_SCORE',
+    score,
+    keys,
+})
+
 export const addNotMatch = (participant) => ({
     type: ADD_NOT_MATCH,
     participant

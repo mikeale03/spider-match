@@ -32,37 +32,66 @@ const participantsReducer = (state = initialState, action) => {
             return action.participants;
         case 'INIT_PARTICIPANTS':
             return action.participants;
+        case 'ADD_SCORE':
+            return state.map((item) => {
+                const keys = action.keys;
+                const l = keys.length;
+                for(let i = 0; i<l; i++) {
+                    if(keys[i] === item.key) {
+                        return {...item, score: item.score + action.score}
+                    }
+                }
+                return item; 
+            });
         case 'UPDATE_SCORE':
             newState = [...state];
-            if(action.result.prev === null || action.result.prev === 'Draw') {}               
-            else {
+            const {prev, next} = action.result;
+            if(prev !== null && prev.participantKey) {
                 newState = newState.map((item) => {
                     return item.key === action.result.prev.participantKey ? 
                         {...item, score: item.score - 1} : item;
                 });
+            } else if (prev !== null && prev.draw) {
+                newState = newState.map((item) => {
+                    return (item.key === action.result.prev.draw[0] || item.key === action.result.prev.draw[1]) ? 
+                        {...item, score: item.score - 0.5} : item;
+                });
             }
-            if(action.result.next === null || action.result.next === 'Draw') {} 
-            else {
+            if(next !== null && next.participantKey) {
                 newState = newState.map((item) => {
                     return item.key === action.result.next.participantKey ? 
                         {...item, score: item.score + 1} : item;
                 });
+            } else if(next !== null && next.draw) {
+                newState = newState.map((item) => {
+                    return (item.key === action.result.next.draw[0] || item.key === action.result.next.draw[1]) ? 
+                        {...item, score: item.score + 0.5} : item;
+                });
             }
-            console.log(newState);
             return newState;
         case 'REVERT_SCORES':
             newState = [...state];
             const matches = action.matches;
             matches.forEach((match) => {
-                if(match.result && match.result !== 'Draw') {
+                if(match.result !== null && match.result !== 'Draw') {
                     newState = newState.map((item) => {
-                        return item.key === match.result.participantKey ? 
-                            {...item, score: item.score - 1} : item;
+                        return item.key === match.result ? 
+                            {...item, score: item.score - match.score} : item;
                     });
-                } 
+                } else if((match.result !== null)) {
+                    let spiders = [];
+                    if(!match.spiders[0].isJoker) spiders.push(match.spiders[0]);
+                    if(!match.spiders[1].isJoker) spiders.push(match.spiders[1]);
+                    newState = newState.map((item) => {
+                        const l = spiders.length;
+                        for(let i=0; i<l; i++) {
+                            if(item.key === spiders[i].parentKey)  
+                                return {...item, score: item.score - match.score};
+                        }
+                        return item;
+                    });
+                }
             });
-            console.log(matches);
-            console.log(newState);
             return newState;
         case 'RESET_ALL':
             return [];

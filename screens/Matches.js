@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Picker, CheckBox, BackHandler, AsyncStorage } from 'react-native';
+import { View, Text, StyleSheet, Picker, CheckBox, BackHandler, } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Header from '../components/custom/Header';
 import CreateMatch from '../components/matches/CreateMatch';
@@ -10,58 +10,93 @@ import { FlatList, TouchableNativeFeedback } from 'react-native-gesture-handler'
 import { updateMatches, updateNotMatch } from "../redux/actions";
 import SMButton from '../components/custom/SMButton';
 import { matchAllParticipantsSpiders, getSingleMatchWithLeastDif } from '../custom-modules/autoMatchMaker';
-import * as MatchesUpdater from '../custom-modules/matchesUpdater';
-import { addNotMatchArr, removeNotMatch } from '../custom-modules/notMatchUpdater';
+import * as matchesUpdater from '../custom-modules/matchesUpdater';
+import { addNotMatchArr, removeNotMatch, generateNotMatch } from '../custom-modules/notMatchUpdater';
 import { AntDesign, FontAwesome5 } from '@expo/vector-icons';
-
+import * as DB from '../custom-modules/database';
 
 function Matches({navigation}) {
   
   const dispatch = useDispatch();
   const notMatch = useSelector((state) => state.notMatch);
   const matches = useSelector((state) => state.matches);
+  const participants = useSelector((state) => state.participants);
   const [isCreate, setIsCreate] = useState(false);
   const [isShowCheckBox, setIsShowCheckBox] = useState(false);
-  const fetchingDone = useSelector( state => state.fetchingDone );
+  const [isReady, setIsReady] = useState(false);
   
-  const onDoneHandler = (match) => {
+  const onDoneHandler = async (spiders) => {
     const newMatch = {
       key:Date.now().toString(),
       isMarked: false,
-      match
+      result:null,
+      participant1:spiders[0].parentKey,
+      participant2:spiders[1].parentKey,
+      score:null,
+      spiders
     };
-    const newMatches = [newMatch, ...matches];
-    const newNotMatch = removeNotMatch(notMatch, match);
-    dispatch(updateMatches(newMatches));
-    dispatch(updateNotMatch(newNotMatch));
-    setIsCreate(false);
+    try{
+      const result = await DB.insertMatch(newMatch);
+      console.log(result);
+      const newMatches = [newMatch, ...matches];
+      const newNotMatch = removeNotMatch(notMatch, newMatch);
+      dispatch(updateMatches(newMatches));
+      dispatch(updateNotMatch(newNotMatch));
+      setIsCreate(false);
+    } catch(error) {
+      console.log(error);
+    } 
   }
 
   const onCancelHandler = () => {
     setIsCreate(false);
   }
 
-  const autoMatchAll = () => {
-    const result = matchAllParticipantsSpiders(notMatch);
-    dispatch(updateMatches(matches.concat(result.matches)));
-    dispatch(updateNotMatch(result.notMatch));
+  const autoMatchAll = async () => {
+    if(isReady) {
+      setIsReady(false);
+      const result = matchAllParticipantsSpiders(notMatch);
+      try {
+        const r = await DB.insertMatches(result.matches);
+        console.log(r);
+        dispatch(updateMatches(matches.concat(result.matches)));
+        dispatch(updateNotMatch(result.notMatch));
+      } catch(error) {
+        console.error(error);
+      }
+    }
+    setIsReady(true);
   }
 
-  const autoMatch = () => {
-    const result = getSingleMatchWithLeastDif(notMatch);
-    if(result.match !== null) {
-      dispatch(updateMatches([result.match, ...matches]));
-      dispatch(updateNotMatch(result.notMatch));
+  const autoMatch = async () => {
+    if(isReady) {
+      setIsReady(false);
+      const result = getSingleMatchWithLeastDif(notMatch);
+      if(result.match !== null) {
+        try {
+          const res = await DB.insertMatch(result.match);
+          console.log(res);
+          dispatch(updateMatches([result.match, ...matches]));
+          dispatch(updateNotMatch(result.notMatch));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      setIsReady(true);
     }
   }
 
-  const onMark = (matchItem) => {
-    const newMatches = matches.map((item) => {
-      return (
-        item.key === matchItem.key ? {...item, isMarked: !matchItem.isMarked} : item
-      )
-    });
-    dispatch(updateMatches(newMatches));
+  const onMark = async (matchItem) => {
+    if(isReady) {
+      setIsReady(false);
+      try {
+        const newMatches = await matchesUpdater.mark(matches, matchItem);
+        dispatch(updateMatches(newMatches));
+      } catch(error) {
+        console.error(error);
+      }
+      setIsReady(true);
+    }
   }
 
   const matchItemLongPressHandler = (matchItem) => {
@@ -69,46 +104,76 @@ function Matches({navigation}) {
     setIsShowCheckBox(true);
   }
   
-  const resetMark = () => {
-    const newMatches = MatchesUpdater.matchResetMark(matches);
-    dispatch(updateMatches(newMatches));
-    setIsShowCheckBox(false);
+  const resetMark = async () => {
+    if(isReady) {
+      setIsReady(false);
+      try {
+        const newMatches = await matchesUpdater.matchResetMark(matches);
+        dispatch(updateMatches(newMatches));
+        setIsShowCheckBox(false);
+      } catch (error) {
+        console.error(error);
+      }
+      setIsReady(true);
+    }
   }
 
-  const deleteMarkedHandler = () => {
-    const {newMatches, markedItem} = MatchesUpdater.deleteMarked(matches);
-    const newNotMatch = addNotMatchArr(notMatch, markedItem);
-    setIsShowCheckBox(false);
-    dispatch({
-      type:'REVERT_SCORES',
-      matches:markedItem,
-    })
-    dispatch(updateMatches(newMatches));
-    dispatch(updateNotMatch(newNotMatch));
+  const deleteMarkedHandler = async () => {
+    if(isReady) {
+      setIsReady(false);
+      try {
+        console.info('win: ',await DB.revertParticipantsWinScore());
+        console.info('draw: ',await DB.revertParticipantsDrawScore());
+        await DB.deleteFromTable('matches', 'isMarked = 1');
+        const {newMatches, markedItem} = matchesUpdater.deleteMarked(matches);
+        const newNotMatch = addNotMatchArr(notMatch, markedItem);
+        setIsShowCheckBox(false);
+        dispatch({
+          type:'REVERT_SCORES',
+          matches:markedItem,
+        })
+        dispatch(updateMatches(newMatches));
+        dispatch(updateNotMatch(newNotMatch));
+      } catch (error) {
+        console.error(error);
+      }
+      setIsReady(true);
+    }
   }
 
-  const markAllHandler = () => {
-    const newMatches = MatchesUpdater.markAll(matches);
-    dispatch(updateMatches(newMatches));
+  const markAllHandler = async () => {
+    if(isReady) {
+      setIsReady(false);
+      try {
+        const newMatches = await matchesUpdater.markAll(matches);
+        dispatch(updateMatches(newMatches));
+      } catch(error) {
+        console.error(error);
+      }
+      setIsReady(true);
+    }
   }
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: false
     });
-  }, []);
 
-  useEffect(() => {
-    const setData = async () => {
-      try{
-        await AsyncStorage.setItem('matches', JSON.stringify(matches));
-        await AsyncStorage.setItem('notMatch', JSON.stringify(notMatch));
-      } catch(e) {
-        alert(e);
+    const fetchData = async () => {
+      try {
+        //const r = await DB.dropTable('matches');
+        //console.log(r);
+        const newMatches = await DB.initMatches();
+        dispatch(updateMatches(newMatches));
+        const newNotMatch = generateNotMatch(participants, newMatches);
+        dispatch(updateNotMatch(newNotMatch));
+      } catch (error) {
+        console.log(error);
       }
+      setIsReady(true);
     }
-    fetchingDone && setData();
-  },[matches,notMatch]);
+    fetchData();
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {

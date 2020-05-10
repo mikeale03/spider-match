@@ -1,8 +1,8 @@
 {
   "urlRandomness": "sv-uv3",
-  "hostType": "lan",
+  "hostType": "tunnel",
   "lanType": "ip",
   "dev": true,
   "minify": false,
-  "https": false
+  "https": true
 }
