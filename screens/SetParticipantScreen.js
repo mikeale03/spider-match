@@ -8,6 +8,7 @@ import Spiders from '../components/set-participant/SetSpiders';
 import ErrorBoundary from  '../components/error-catch/ErrorBoundary';
 import SMTextInput from '../components/custom/SMTextInput';
 import SMImage from '../components/custom/SMImage';
+import SelectImageModal from '../components/set-participant/SelectImageModal';
 import { AntDesign } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
@@ -17,6 +18,7 @@ export default function SetParticipant({route, navigation}) {
     const [participant, setParticipant] = useState({});
     const [name, setName] = useState('');
     const [spiders, setSpiders] = useState([]);
+    const [modal, setModal] = useState({isVisible:false, param:null});
 
     useEffect(() => {
         const p = route.params?.participant ? 
@@ -122,13 +124,32 @@ export default function SetParticipant({route, navigation}) {
         !data.cancelled && setParticipant({...participant, image:data.uri});
     }
 
+    const spiderSelectImage = (spider) => {
+        setModal({isVisible:true, param:spider});
+    }
+
+    const participantSelecImage = () => {
+        setModal({isVisible:true, param:participant});
+    }
+
+    //param could be spider or participant
+    const onImagePick = (uri, param) => {
+        if(param.key === participant.key)
+            setParticipant({...participant, image:uri});
+        else {
+            const spider = {...param, image:uri};
+            onEditSpider(spider);
+        }
+        setModal({isVisible:false, param:null});
+    }
+
     return (
         <View style={styles.container}>
             <ErrorBoundary>
                 <ScrollView keyboardShouldPersistTaps='always'>
                     <View style={styles.innerContainer}>
                         <View style={styles.profilePicContainer}>
-                            <TouchableNativeFeedback onPress={launchCamera} >
+                            <TouchableNativeFeedback onPress={participantSelecImage} >
                                 <SMImage shape={'circle'} uri={participant.image}
                                     fallbackRender={() => (<AntDesign name='user' size={60} color='#ccc' />)}
                                 />
@@ -145,13 +166,20 @@ export default function SetParticipant({route, navigation}) {
                             <Spiders spiders={spiders} 
                                 onEdit={onEditSpider} 
                                 onAdd={onAddSpider} 
-                                onDelete={onDeleteSpider} />
+                                onDelete={onDeleteSpider}
+                                onImageSelect={spiderSelectImage}
+                            />
                         </KeyboardAvoidingView>
                     </View>
                 </ScrollView>
             </ErrorBoundary>
             <Header title="Set Participant" editMode="true"
                 onDone={submitParticipant} onClose={onCloseHandler}/>
+            <SelectImageModal
+                onRequestClose={() => setModal({isVisible:false, param:null})}
+                setting={modal}
+                onImagePick={onImagePick}
+            />
         </View>
     );
 }

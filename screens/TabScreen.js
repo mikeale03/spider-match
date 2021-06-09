@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Participants from './Participants';
-import Matches from './Matches';
-import Allies from './Allies';
+import Participants from './ParticipantsScreen';
+import Matches from './MatchesScreen';
+import Allies from './AlliesScreen';
 import { FontAwesome5, Feather } from '@expo/vector-icons';
 import * as DB  from "../custom-modules/database";
 import { useDispatch } from 'react-redux';

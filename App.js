@@ -3,8 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack'
 import TabScreen from './screens/TabScreen';
-import SetParticipant from './screens/SetParticipant';
-import Match from './screens/Match';
+import SetParticipant from './screens/SetParticipantScreen';
+import Match from './screens/MatchScreen';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './redux/reducers';

@@ -9,7 +9,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 
-export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
+export default function SetSpiders({spiders , onEdit, onAdd, onDelete, onImageSelect}) {
     
     const addSpiderHandler = () => {
         const len = spiders.length;
@@ -47,16 +47,6 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
         onEdit(spider);
     }
 
-    const launchCamera = async (item) => {
-        try {
-            const data = await ImagePicker.launchCameraAsync({allowsEditing:true, aspect:[1,1]});
-            console.info('camera: ', data);
-            !data.cancelled && onEdit({...item, image:data.uri});
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     return (
         <View style={styles.container}>
             <View style={styles.title}>
@@ -65,7 +55,7 @@ export default function SetSpiders({spiders , onEdit, onAdd, onDelete}) {
             { spiders && spiders.map((item, index) => (
                 <View key={item.key} style={styles.listContainer}>
                     <View style={styles.imageContainer}>
-                        <TouchableNativeFeedback onPress={launchCamera.bind(this,item)}>
+                        <TouchableNativeFeedback onPress={onImageSelect.bind(null,item)}>
                             <SMImage shape='square' size={70} uri={item.image}
                                 fallbackRender={() => (<FontAwesome5 name='spider' size={50*.6} color='#ccc'/>)}
                             />
